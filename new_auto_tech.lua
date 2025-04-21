@@ -1,32 +1,32 @@
 --- @module "definitions"
 
-local deque = require "utils.deque"
+local deque = require "__dependency-graph-lib__/utils/deque"
 
-local object_node = require "object_nodes.object_node"
-local object_types = require "object_nodes.object_types"
-local object_node_descriptor = require "object_nodes.object_node_descriptor"
-local object_node_storage = require "object_nodes.object_node_storage"
+local object_node = require "__dependency-graph-lib__/object_nodes/object_node"
+local object_types = require "__dependency-graph-lib__/object_nodes/object_types"
+local object_node_descriptor = require "__dependency-graph-lib__/object_nodes/object_node_descriptor"
+local object_node_storage = require "__dependency-graph-lib__/object_nodes/object_node_storage"
 
-local requirement_node = require "requirement_nodes.requirement_node"
-local requirement_types = require "requirement_nodes.requirement_types"
-local requirement_node_storage = require "requirement_nodes.requirement_node_storage"
+local requirement_node = require "__dependency-graph-lib__/requirement_nodes/requirement_node"
+local requirement_types = require "__dependency-graph-lib__/requirement_nodes/requirement_types"
+local requirement_node_storage = require "__dependency-graph-lib__/requirement_nodes/requirement_node_storage"
 
 local technology_node = require "technology_nodes.technology_node"
 local technology_node_storage = require "technology_nodes.technology_node_storage"
 
-local autoplace_control_functor = require "functors.autoplace_control_functor"
-local entity_functor = require "functors.entity_functor"
-local fluid_functor = require "functors.fluid_functor"
-local item_functor = require "functors.item_functor"
-local start_functor = require "functors.start_functor"
-local planet_functor = require "functors.planet_functor"
-local recipe_functor = require "functors.recipe_functor"
-local technology_functor = require "functors.technology_functor"
-local tile_functor = require "functors.tile_functor"
-local victory_functor = require "functors.victory_functor"
+local autoplace_control_functor = require "__dependency-graph-lib__/functors/autoplace_control_functor"
+local entity_functor = require "__dependency-graph-lib__/functors/entity_functor"
+local fluid_functor = require "__dependency-graph-lib__/functors/fluid_functor"
+local item_functor = require "__dependency-graph-lib__/functors/item_functor"
+local start_functor = require "__dependency-graph-lib__/functors/start_functor"
+local planet_functor = require "__dependency-graph-lib__/functors/planet_functor"
+local recipe_functor = require "__dependency-graph-lib__/functors/recipe_functor"
+local technology_functor = require "__dependency-graph-lib__/functors/technology_functor"
+local tile_functor = require "__dependency-graph-lib__/functors/tile_functor"
+local victory_functor = require "__dependency-graph-lib__/functors/victory_functor"
 
-local item_requirements = require "requirements.item_requirements"
-local planet_requirements = require "requirements.planet_requirements"
+local item_requirements = require "__dependency-graph-lib__/requirements/item_requirements"
+local planet_requirements = require "__dependency-graph-lib__/requirements/planet_requirements"
 
 ---@type table<ObjectType, ObjectNodeFunctor>
 local functor_map = {}

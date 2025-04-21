@@ -1,4 +1,4 @@
-local json = require "utils/json"
+local json = require "__dependency-graph-lib__/utils/json"
 local autotech_class = require "new_auto_tech"
 
 local start_time = os.time()
@@ -26,7 +26,7 @@ if f == nil then
 end
 
 print("Loading defines table...")
-_G.defines = require "utils.defines"
+_G.defines = require "__dependency-graph-lib__/utils/defines"
 
 print("Parsing data raw JSON...")
 _G.data = {}
