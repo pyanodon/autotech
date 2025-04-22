@@ -58,12 +58,8 @@ function auto_tech:run()
     -- fluid
     -- resource
 
-    self:run_phase(function()
-        self:run_phase(self.vanilla_massaging, "vanilla massaging")
-    end, "vanilla massaging")
-
+    self:run_phase(self.vanilla_massaging, "vanilla massaging")
     self.dependency_graph:run()
-
     self:run_phase(function()
         self:run_phase(self.construct_tech_graph_nodes, "constructing tech graph nodes")
         self:run_phase(self.construct_tech_graph_edges, "constructing tech graph edges")
