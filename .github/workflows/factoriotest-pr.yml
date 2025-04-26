@@ -3,8 +3,7 @@ name: Test
 on:
   pull_request_target:
     branches:
-    - master
-    - Frozen
+    - main
 
 permissions:
   contents: read
