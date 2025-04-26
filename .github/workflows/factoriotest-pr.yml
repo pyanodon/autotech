@@ -1,0 +1,20 @@
+name: Test
+
+on:
+  pull_request_target:
+    branches:
+    - master
+    - Frozen
+
+permissions:
+  contents: read
+
+jobs:
+  test-pull-request:
+    name: PR
+    uses: pyanodon/pyanodontests/.github/workflows/pytest.yml@v1
+    with:
+      repository: ${{ github.repository }}
+      ref: ${{ github.event.pull_request.head.sha }}
+      test_branch: ${{ github.head_ref || github.ref_name }}
+    secrets: inherit
