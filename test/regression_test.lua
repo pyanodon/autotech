@@ -1,3 +1,11 @@
+package.path = '../dependency-graph-lib/?.lua;' .. package.path
+
+package.searchers[#package.searchers + 1] = function(libraryname)
+    local chopped = libraryname:gsub("^__dependency%-graph%-lib__/", "")
+    local result = require(chopped)
+    return function() return result end
+end
+
 local json = require "__dependency-graph-lib__/utils/json"
 local autotech_class = require "new_auto_tech"
 
