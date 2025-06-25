@@ -64,10 +64,14 @@ function technology_node:link_technologies(technology_nodes)
 
     local visitedObjects = {}
     local q = deque.new()
+    local fulfilled_requirement_nodes = {}
 
     local function add_initial_node(node)
         visitedObjects[node] = true
         q:push_right(technology_dependency_tracking_node:new_root(node))
+        for _, fulfilled_requirement_node in pairs(node.this_can_fulfil) do
+            fulfilled_requirement_nodes[fulfilled_requirement_node] = true
+        end
         if verbose_logging then
             log("Initial node that needs to be useable: " .. node.printable_name)
         end
@@ -83,38 +87,42 @@ function technology_node:link_technologies(technology_nodes)
         local next_object = next_tracking_node.object
 
         for _, requirement in pairs(next_object.requirements) do
-            ---@type ObjectNode
-            local canonical_fulfiller = requirement.canonical_fulfiller
-            if canonical_fulfiller == nil then
-                if verbose_logging then
-                    log("Cannot fulfil requirement " .. requirement.printable_name .. ", it has no canonical fulfiller. Aborting search, technology unusable.")
-                end
-                self.not_part_of_canonical_path = true
-                return
-            end
-
-            local tracker_node = technology_dependency_tracking_node:new_from_previous(canonical_fulfiller, requirement, next_tracking_node)
-            if canonical_fulfiller.descriptor.object_type == object_types.technology then
-                local canonical_fulfiller_node = technology_nodes:find_technology_node(canonical_fulfiller)
-                if canonical_fulfiller_node == nil then
-                    error("No tech node found for " .. canonical_fulfiller.printable_name)
-                end
-                if canonical_fulfiller_node ~= self and self.requirements[canonical_fulfiller_node] == nil then
-                    self.requirements[canonical_fulfiller_node] = tracker_node
-                    self.nr_requirements = self.nr_requirements + 1
-                    canonical_fulfiller_node.nodes_that_require_this[self.printable_name] = self
-    
-                    if verbose_logging then
-                        log("Found a tech dependency: " .. canonical_fulfiller.printable_name)
-                    end
-                end
+            if fulfilled_requirement_nodes[requirement] then
+                log("Requirement " .. requirement.printable_name .. " skipped, immediately fulfilled by tech itself.")
             else
-                if visitedObjects[canonical_fulfiller] == nil then
-                    q:push_right(tracker_node)
-                    visitedObjects[canonical_fulfiller] = true
-
+                ---@type ObjectNode
+                local canonical_fulfiller = requirement.canonical_fulfiller
+                if canonical_fulfiller == nil then
                     if verbose_logging then
-                        log("Dependency on: " .. canonical_fulfiller.printable_name)
+                        log("Cannot fulfil requirement " .. requirement.printable_name .. ", it has no canonical fulfiller. Aborting search, technology unusable.")
+                    end
+                    self.not_part_of_canonical_path = true
+                    return
+                end
+
+                local tracker_node = technology_dependency_tracking_node:new_from_previous(canonical_fulfiller, requirement, next_tracking_node)
+                if canonical_fulfiller.descriptor.object_type == object_types.technology then
+                    local canonical_fulfiller_node = technology_nodes:find_technology_node(canonical_fulfiller)
+                    if canonical_fulfiller_node == nil then
+                        error("No tech node found for " .. canonical_fulfiller.printable_name)
+                    end
+                    if canonical_fulfiller_node ~= self and self.requirements[canonical_fulfiller_node] == nil then
+                        self.requirements[canonical_fulfiller_node] = tracker_node
+                        self.nr_requirements = self.nr_requirements + 1
+                        canonical_fulfiller_node.nodes_that_require_this[self.printable_name] = self
+        
+                        if verbose_logging then
+                            log("Found a tech dependency: " .. canonical_fulfiller.printable_name)
+                        end
+                    end
+                else
+                    if visitedObjects[canonical_fulfiller] == nil then
+                        q:push_right(tracker_node)
+                        visitedObjects[canonical_fulfiller] = true
+
+                        if verbose_logging then
+                            log("Dependency on: " .. canonical_fulfiller.printable_name)
+                        end
                     end
                 end
             end

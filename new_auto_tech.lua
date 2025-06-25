@@ -2,6 +2,7 @@
 
 local deque = require "__dependency-graph-lib__/utils/deque"
 local object_types = require "__dependency-graph-lib__/object_nodes/object_types"
+local reachability = require "utils/reachability"
 
 local technology_node = require "technology_nodes.technology_node"
 local technology_node_storage = require "technology_nodes.technology_node_storage"
@@ -61,6 +62,7 @@ function auto_tech:run()
     self:run_phase(self.vanilla_massaging, "vanilla massaging")
     self.dependency_graph:run()
     self:run_phase(function()
+        self:run_phase(self.determine_mandatory_dependencies, "determine mandatory dependencies")
         self:run_phase(self.construct_tech_graph_nodes, "constructing tech graph nodes")
         self:run_phase(self.construct_tech_graph_edges, "constructing tech graph edges")
         self:run_phase(self.linearise_tech_graph, "tech graph linearisation")
@@ -89,6 +91,86 @@ function auto_tech:vanilla_massaging()
     end
 end
 
+function auto_tech:determine_mandatory_dependencies()
+    local is_done = false
+    local a_mandatory_requirement_for_b = reachability:new()
+    self.dependency_graph:for_all_nodes(function (_, object)
+        a_mandatory_requirement_for_b:add_node(object)
+    end)
+    local round_number = 1
+    while not is_done do
+        if self.configuration.verbose_logging then
+            log("Determining mandatory dependencies, round " .. round_number)
+        end
+        is_done = true
+        round_number = round_number + 1
+        self.dependency_graph:for_all_nodes(function (_, object)
+            if self.configuration.verbose_logging then
+                log("Considering " .. object.printable_name)
+            end
+            for _, requirement in pairs(object.requirements) do
+                if not requirement.mandatory_fulfiller then
+                    if self.configuration.verbose_logging then
+                        log(requirement.printable_name .. " not (yet?) mandatory, checking it.")
+                    end
+                    local eligible_fulfiller = nil
+                    for index, fulfiller in pairs(requirement.nodes_that_can_fulfil_this) do
+                        for otherIndex, otherFulfiller in pairs(requirement.nodes_that_can_fulfil_this) do
+                            if index ~- otherIndex and a_mandatory_requirement_for_b:reaches(fulfiller, otherFulfiller) then
+                                if self.configuration.verbose_logging then
+                                    log("Fulfiller " .. fulfiller.printable_name .. " rejected, it already depends on " .. otherFulfiller.printable_name)
+                                end
+                                goto continue
+                            end
+                        end
+                        if a_mandatory_requirement_for_b:reaches(object, fulfiller) then
+                            if self.configuration.verbose_logging then
+                                log("Fulfiller " .. fulfiller.printable_name .. " rejected, it depends on the parent object node.")
+                            end
+                        else
+                            if eligible_fulfiller ~= nil then
+                                if self.configuration.verbose_logging then
+                                    log("Fulfiller " .. fulfiller.printable_name .. " also eligible, requirement does not have single fulfiller.")
+                                end
+                                goto found_duplicate
+                            end
+
+                            if self.configuration.verbose_logging then
+                                log("Fulfiller " .. fulfiller.printable_name .. " eligible, saving it.")
+                            end
+                            eligible_fulfiller = fulfiller
+                        end
+                        ::continue::
+                    end
+                    if eligible_fulfiller ~= nil then
+                        requirement.mandatory_fulfiller = eligible_fulfiller
+                        is_done = false
+                        a_mandatory_requirement_for_b:link(eligible_fulfiller, object)
+                        if self.configuration.verbose_logging then
+                            log("Fulfiller " .. eligible_fulfiller.printable_name .. " saved as mandatory fulfiller for " .. requirement.printable_name)
+                        end
+                    end
+                    ::found_duplicate::
+                end
+            end
+        end)
+    end
+    if self.configuration.verbose_logging then
+        self.dependency_graph:for_all_nodes(function (_, object)
+            log("Summarizing " .. object.printable_name)
+            for _, requirement in pairs(object.requirements) do
+                local message = nil
+                if requirement.mandatory_fulfiller == nil then
+                    message = "no mandatory fulfiller"
+                else
+                    message = requirement.mandatory_fulfiller.printable_name .. " as required fulfiller"
+                end
+                log("Requirement " .. requirement.printable_name .. " has " .. message)
+            end
+        end)
+    end
+end
+
 function auto_tech:construct_tech_graph_nodes()
     self.dependency_graph:for_all_nodes_of_type(object_types.technology, function (object_node)
         technology_node:new(object_node, self.technology_nodes)
@@ -105,7 +187,6 @@ end
 function auto_tech:linearise_tech_graph()
     local verbose_logging = self.configuration.verbose_logging
     local tech_order_index = 1
-    local tech_node_count = self.technology_nodes:node_count()
     local q = deque.new()
     self.technology_nodes:for_all_nodes(function (technology_node)
         if technology_node:has_no_more_unfulfilled_requirements() then
