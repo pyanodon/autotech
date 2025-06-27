@@ -46,10 +46,10 @@ function reachability_tracker:reaches(from, to)
     return self.targets_reachable[from][to] or false
 end
 
----@param from any
+---@param to any
 ---@return table<any, boolean>
-function reachability_tracker:reachable_states(from)
-    return self.targets_reachable[from]
+function reachability_tracker:states_that_can_reach(to)
+    return self.reachable_from[to]
 end
 
 return reachability_tracker
