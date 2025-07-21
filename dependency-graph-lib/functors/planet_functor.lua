@@ -41,6 +41,10 @@ function (object, requirement_nodes, object_nodes)
     local mgs = planet.map_gen_settings
     if not mgs then return end
 
+    if mgs.cliff_settings then
+        object_node_functor:add_fulfiller_for_object_requirement(object, mgs.cliff_settings.name, object_types.entity, entity_requirements.instantiate, object_nodes)
+    end
+
     local autoplace_settings = mgs.autoplace_settings
     if not autoplace_settings then return end
 
@@ -58,5 +62,4 @@ function (object, requirement_nodes, object_nodes)
 end)
 return planet_functor
 
--- self:add_disjunctive_dependent(nodes, node_types.entity_node, mgs.cliff_settings, "cliff autoplace", entity_verbs.instantiate, "name")
 -- self:add_disjunctive_dependent(nodes, node_types.entity_node, mgs.territory_settings, "planet territory owner", entity_verbs.instantiate, "units")
