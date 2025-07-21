@@ -1,3 +1,5 @@
+require "dependency-graph-lib.data"
+
 -- By default autotech assumes nauvis as the starting planet.
 -- If your mod changes this, please set
 -- data.raw.planet["nauvis"].autotech_always_available = false

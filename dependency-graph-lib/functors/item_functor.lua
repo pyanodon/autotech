@@ -30,6 +30,23 @@ function (object, requirement_nodes, object_nodes)
         object_node_functor:add_fulfiller_for_typed_requirement(object, item.category, requirement_types.module_category, requirement_nodes)
     elseif item.type == "capsule" then
         common_type_handlers:handle_attack_parameters(item.capsule_action.attack_parameters, object_node_functor, object, object_nodes)
+    elseif item.type == "space-platform-starter-pack" then
+        for _, item in pairs(item.initial_items or {}) do
+            object_node_functor:add_fulfiller_for_object_requirement(object, item.name, object_types.item, item_requirements.create, object_nodes)
+        end
+
+        local tiles = {} -- dedupe
+        for _, tile in pairs(item.tiles or {}) do
+            tiles[tile.tile] = true
+        end
+        for tile in pairs(tiles) do
+            object_node_functor:add_fulfiller_for_object_requirement(object, tile, object_types.tile, tile_requirements.place, object_nodes)
+        end
+
+        local success, space_platform_hub = pcall(function() return item.trigger[1].action_delivery.source_effects[1].entity_name end)
+        if success then
+            object_node_functor:add_fulfiller_for_object_requirement(object, space_platform_hub, object_types.entity, entity_requirements.instantiate, object_nodes)
+        end
     end
 
     if item.place_as_tile then
@@ -50,9 +67,6 @@ return item_functor
 --     if item.rocket_launch_products then
 --         self:add_dependency(nodes, node_types.entity_node, 1, "requires any cargo-landing-pad prototype", entity_verbs.requires_cargo_landing_pad)
 --     end
-
---     elseif item.type == "space-platform-starter-pack" then
---         self:add_disjunctive_dependent(nodes, node_types.item_node, item.initial_items, "initial item in the space platform starter pack", item_verbs.create, "name")
 
 --     elseif item.type == "rail-planner" then
 --         self:add_disjunctive_dependent(nodes, node_types.entity_node, item.rails, "rail", entity_verbs.instantiate)

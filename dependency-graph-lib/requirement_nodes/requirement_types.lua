@@ -10,6 +10,7 @@ local requirement_types = {
     recipe_category = "recipe_category",
     resource_category = "resource_category",
     rocket_silo = "rocket_silo",
+    space_platform = "space_platform",
     cargo_landing_pad = "cargo_landing_pad",
     victory = "victory",
 }

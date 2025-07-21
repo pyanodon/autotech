@@ -27,7 +27,7 @@ function (object, requirement_nodes, object_nodes)
 
     for _, asteroid in pairs(planet.asteroid_spawn_definitions or {}) do
         local type = asteroid.type or "entity"
-        if type == "asteroid" then
+        if type == "asteroid-chunk" then
             object_node_functor:add_fulfiller_for_object_requirement(object, asteroid.asteroid, object_types.entity, entity_requirements.instantiate, object_nodes)
         elseif type == "entity" then
             object_node_functor:add_fulfiller_for_object_requirement(object, asteroid.asteroid, object_types.entity, entity_requirements.instantiate, object_nodes)

@@ -104,6 +104,7 @@ function dependency_graph:create_nodes()
     self.victory_node = object_node:new({name="victory"}, object_node_descriptor:unique_node(object_types.victory), self.object_nodes, self.configuration)
     requirement_node:new_independent_requirement(requirement_types.electricity, self.requirement_nodes, self.configuration)
     requirement_node:new_independent_requirement(requirement_types.fluid_with_fuel_value, self.requirement_nodes, self.configuration)
+    requirement_node:new_independent_requirement(requirement_types.space_platform, self.requirement_nodes, self.configuration)
     requirement_node:new_independent_requirement(requirement_types.rocket_silo, self.requirement_nodes, self.configuration)
     requirement_node:new_independent_requirement(requirement_types.cargo_landing_pad, self.requirement_nodes, self.configuration)
     requirement_node:new_independent_requirement(requirement_types.victory, self.requirement_nodes, self.configuration)
@@ -270,9 +271,9 @@ end
 function dependency_graph:verify_victory_reachable_recipe_graph()
     local victory_reachable = self.victory_node:has_no_more_unfulfilled_requirements()
     if victory_reachable then
-        log("The game can be won with the current mods.")
+        log("Victory: The game can be won with the current mods.")
     else
-        error("Error: no victory condition can be reached. It's possible that this is a mod not informing dependency-graph-lib about dependencies introduced in the mod correctly or a bug in dependency-graph-lib.\nUnresolved dependencies: " .. self.victory_node:print_dependencies())
+        error("Error: no victory condition can be reached. It's possible that this is a mod not informing dependency-graph-lib about dependencies introduced in the mod correctly or a bug in dependency-graph-lib. Please see factorio-current.log for more info. Additionally, consider enabling autotech verbose logging.")
     end
 end
 

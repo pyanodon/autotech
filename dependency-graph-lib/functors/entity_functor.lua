@@ -123,8 +123,8 @@ function (object, requirement_nodes, object_nodes)
             else
                 object_node_functor:add_independent_requirement_to_object(object, requirement_types.fluid_with_fuel_value, requirement_nodes)
             end
-        else
-            assert(type == "void", "Unknown energy source type")
+        elseif type ~= "void" then
+            error("Unknown energy source type " .. type)
         end
     end
 
@@ -181,6 +181,10 @@ function (object, requirement_nodes, object_nodes)
         end
     end
 
+    if entity.type == "asteroid-chunk" then
+        object_node_functor:add_independent_requirement_to_object(object, requirement_types.space_platform, requirement_nodes)
+    end
+
     --     if entity.type == "plant" then
     --         self:add_disjunctive_dependency(nodes, node_types.entity_node, 1, "requires any agri tower prototype", entity_verbs.requires_agri_tower)
     --     elseif entity.type == "agricultural-tower" then
@@ -197,6 +201,10 @@ function (object, requirement_nodes, object_nodes)
     end
     if entity.type == "cargo-landing-pad" then
         object_node_functor:add_fulfiller_for_independent_requirement(object, requirement_types.cargo_landing_pad, requirement_nodes)
+    end
+    if entity.type == "space-platform-hub" then
+        object_node_functor:add_independent_requirement_to_object(object, requirement_types.rocket_silo, requirement_nodes)
+        object_node_functor:add_fulfiller_for_independent_requirement(object, requirement_types.space_platform, requirement_nodes)
     end
     
     --     if entity.type == "cargo-pod" then
