@@ -105,7 +105,14 @@ function object_node:print_dependencies()
         end
     end
 
-    return (self.nr_requirements - self.nr_fulfilled_requirements) .. " unfulfilled requirements on " .. concat_requirements(unfulfilled_requirements) .. " ---- " .. self.nr_fulfilled_requirements .. " fulfilled requirements on " .. concat_requirements(self.fulfilled_requirements)
+    local nr_unfulfilled_requirements = (self.nr_requirements - self.nr_fulfilled_requirements)
+    local unfulfilled_message = nr_unfulfilled_requirements .. " unfulfilled requirements on " .. concat_requirements(unfulfilled_requirements)
+    unfulfilled_message = (self.nr_unfulfilled_requirements == 0 and "zero unfulfilled requirements." or unfulfilled_message)
+
+    local fulfilled_message = self.nr_fulfilled_requirements .. " fulfilled requirements on " .. concat_requirements(self.fulfilled_requirements)
+    fulfilled_message = (self.nr_fulfilled_requirements == 0 and "zero fulfilled requirements." or fulfilled_message)
+
+    return unfulfilled_message .. " ---- " .. fulfilled_message
 end
 
 return object_node
