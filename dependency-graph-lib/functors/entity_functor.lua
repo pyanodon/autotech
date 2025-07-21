@@ -9,29 +9,22 @@ local fluid_requirements = require "dependency-graph-lib.requirements.fluid_requ
 local technology_requirements = require "dependency-graph-lib.requirements.technology_requirements"
 local common_type_handlers = require "dependency-graph-lib.functors.common_type_handlers"
 
--- local is_nonelevated_rail = {
---     ["curved-rail-a"] = true,
---     ["curved-rail-b"] = true,
---     ["half-diagonal-rail"] = true,
---     ["straight-rail"] = true,
--- }
+local is_elevated_rail = {
+    ["elevated-curved-rail-a"] = true,
+    ["elevated-curved-rail-b"] = true,
+    ["elevated-half-diagonal-rail"] = true,
+    ["elevated-straight-rail"] = true,
+}
 
--- local is_elevated_rail = {
---     ["elevated-curved-rail-a"] = true,
---     ["elevated-curved-rail-b"] = true,
---     ["elevated-half-diagonal-rail"] = true,
---     ["elevated-straight-rail"] = true,
--- }
-
--- local requires_rail_to_build = {
---     ["locomotive"] = true,
---     ["cargo-wagon"] = true,
---     ["fluid-wagon"] = true,
---     ["artillery-wagon"] = true,
---     ["rail-signal"] = true,
---     ["rail-chain-signal"] = true,
---     ["train-stop"] = true,
--- }
+local requires_rail_to_build = {
+    ["locomotive"] = true,
+    ["cargo-wagon"] = true,
+    ["fluid-wagon"] = true,
+    ["artillery-wagon"] = true,
+    ["rail-signal"] = true,
+    ["rail-chain-signal"] = true,
+    ["train-stop"] = true,
+}
 
 local is_energy_generator = {
     ["fusion-generator"] = true,
@@ -220,18 +213,7 @@ function (object, requirement_nodes, object_nodes)
             end
         end
     end
-
-    --     if entity.type == "plant" then
-    --         self:add_disjunctive_dependency(nodes, node_types.entity_node, 1, "requires any agri tower prototype", entity_verbs.requires_agri_tower)
-    --     elseif entity.type == "agricultural-tower" then
-    --         self:add_disjunctive_dependent(nodes, node_types.entity_node, 1, "can grow", entity_verbs.requires_agri_tower)
-    --     end
     
-    --     if entity.type == "rocket-silo" or entity.type == "cargo-bay" or entity.type == "cargo-pod" then
-    --         self:add_disjunctive_dependency(nodes, node_types.entity_node, 1, "requires any cargo-landing-pad prototype", entity_verbs.requires_cargo_landing_pad)
-    --     elseif entity.type == "cargo-landing-pad" then
-    --         self:add_disjunctive_dependent(nodes, node_types.entity_node, 1, "can land rockets on", entity_verbs.requires_cargo_landing_pad)
-    --     end
     if entity.type == "rocket-silo" then
         object_node_functor:add_fulfiller_for_independent_requirement(object, requirement_types.rocket_silo, requirement_nodes)
         object_node_functor:add_fulfiller_for_object_requirement(object, entity.cargo_pod_entity, object_types.entity, entity_requirements.instantiate, object_nodes)
@@ -256,20 +238,18 @@ function (object, requirement_nodes, object_nodes)
         object_node_functor:add_fulfiller_for_independent_requirement(object, requirement_types.space_platform, requirement_nodes)
     end
     
-    --     if is_elevated_rail[entity.type] then
-    --         self:add_dependency(nodes, node_types.entity_node, 1, "requires any rail-support prototype", entity_verbs.requires_rail_supports)
-    --         self:add_dependency(nodes, node_types.entity_node, 1, "requires any rail-ramp prototype", entity_verbs.requires_rail_ramp)
-    --     elseif entity.type == "rail-support" then
-    --         self:add_disjunctive_dependent(nodes, node_types.entity_node, 1, "requires any rail-support prototype", entity_verbs.requires_rail_supports)
-    --     elseif entity.type == "rail-ramp" then
-    --         self:add_disjunctive_dependent(nodes, node_types.entity_node, 1, "requires any rail-ramp prototype", entity_verbs.requires_rail_ramp)
-    --     end
+    if is_elevated_rail[entity.type] then
+        object_node_functor:add_independent_requirement_to_object(object, requirement_types.rail_ramp, requirement_nodes)
+        object_node_functor:add_independent_requirement_to_object(object, requirement_types.rail_support, requirement_nodes)
+    elseif entity.type == "rail-support" then
+        object_node_functor:add_fulfiller_for_independent_requirement(object, requirement_types.rail_support, requirement_nodes)
+    elseif entity.type == "rail-ramp" then
+        object_node_functor:add_fulfiller_for_independent_requirement(object, requirement_types.rail_ramp, requirement_nodes)
+    end
     
-    --     if is_elevated_rail[entity.type] or is_nonelevated_rail[entity.type] then
-    --         self:add_disjunctive_dependent(nodes, node_types.entity_node, 1, "requires any rail prototype", entity_verbs.requires_rail)
-    --     elseif requires_rail_to_build[entity.type] then
-    --         self:add_dependency(nodes, node_types.entity_node, 1, "requires any rail prototype", entity_verbs.requires_rail)
-    --     end
+    if requires_rail_to_build[entity.type] then
+        object_node_functor:add_independent_requirement_to_object(object, requirement_types.rail, requirement_nodes)
+    end
     
     -- Does this entity get autoplaced on all planets? (this case is common in 1.1, rare in space age.)
     if entity.autoplace and entity.autoplace.default_enabled ~= false then

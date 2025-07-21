@@ -46,6 +46,11 @@ function (object, requirement_nodes, object_nodes)
         if success then
             object_node_functor:add_fulfiller_for_object_requirement(object, space_platform_hub, object_types.entity, entity_requirements.instantiate, object_nodes)
         end
+    elseif item.type == "rail-planner" then
+        for _, rail in pairs(item.rails or {}) do
+            object_node_functor:add_fulfiller_for_object_requirement(object, rail, object_types.entity, entity_requirements.instantiate, object_nodes)
+        end
+        object_node_functor:add_fulfiller_for_independent_requirement(object, requirement_types.rail, requirement_nodes)
     end
 
     if item.place_as_tile then
@@ -65,10 +70,6 @@ return item_functor
 --     self:add_disjunctive_dependent(nodes, node_types.item_node, item.rocket_launch_products, "rocket launch product", item_verbs.create, "name")
 --     if item.rocket_launch_products then
 --         self:add_dependency(nodes, node_types.entity_node, 1, "requires any cargo-landing-pad prototype", entity_verbs.requires_cargo_landing_pad)
---     end
-
---     elseif item.type == "rail-planner" then
---         self:add_disjunctive_dependent(nodes, node_types.entity_node, item.rails, "rail", entity_verbs.instantiate)
 --     end
 
 
