@@ -199,6 +199,27 @@ function (object, requirement_nodes, object_nodes)
     if entity.type == "asteroid-chunk" then
         object_node_functor:add_independent_requirement_to_object(object, requirement_types.space_platform, requirement_nodes)
     end
+    if entity.type == "agricultural-tower" then
+        if entity.accepted_seeds then
+            local accepted_seeds = {}
+            for _, seed in pairs(entity.accepted_seeds) do
+                accepted_seeds[seed] = true
+            end
+            for _, item_node in pairs(object_nodes.nodes[object_types.item]) do
+                local item = item_node.object
+                if item.plant_result and accepted_seeds[item] then
+                    object_node_functor:add_fulfiller_for_object_requirement(item_node, item.plant_result, object_types.entity, entity_requirements.instantiate, object_nodes)
+                end
+            end
+        else
+            for _, item_node in pairs(object_nodes.nodes[object_types.item]) do
+                local item = item_node.object
+                if item.plant_result then
+                    object_node_functor:add_fulfiller_for_object_requirement(item_node, item.plant_result, object_types.entity, entity_requirements.instantiate, object_nodes)
+                end
+            end
+        end
+    end
 
     --     if entity.type == "plant" then
     --         self:add_disjunctive_dependency(nodes, node_types.entity_node, 1, "requires any agri tower prototype", entity_verbs.requires_agri_tower)
