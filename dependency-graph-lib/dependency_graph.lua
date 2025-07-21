@@ -153,6 +153,7 @@ function dependency_graph:create_nodes()
     process_object_types(self.data_raw["recipe"], recipe_functor)
     process_object_types(self.data_raw["technology"], technology_functor)
     process_object_types(self.data_raw["planet"], planet_functor)
+    process_object_types(self.data_raw["space-location"], planet_functor)
     process_object_types(self.data_raw["tile"], tile_functor)
 
     for item_type in pairs(defines.prototypes.item) do
@@ -207,7 +208,16 @@ function dependency_graph:run_custom_mod_dependencies()
         end
     end
 
-    victory_functor:add_fulfiller_for_independent_requirement(self.object_nodes:find_object_node(object_node_descriptor:new("satellite", object_types.item)), requirement_types.victory, self.requirement_nodes)
+    if mods.pycoalprocessing then
+        local pyrrhic_victory_node = self.object_nodes:find_object_node(object_node_descriptor:new("pyrrhic", object_types.technology))
+        victory_functor:add_fulfiller_for_independent_requirement(pyrrhic_victory_node, requirement_types.victory, self.requirement_nodes)
+    elseif mods["space-age"] then
+        local promethium_science_pack_node = self.object_nodes:find_object_node(object_node_descriptor:new("promethium-science-pack", object_types.item))
+        victory_functor:add_fulfiller_for_independent_requirement(pyrrhic_victory_node, requirement_types.victory, self.requirement_nodes)
+    else
+        local satellite_node = self.object_nodes:find_object_node(object_node_descriptor:new("satellite", object_types.item))
+        victory_functor:add_fulfiller_for_independent_requirement(satellite_node, requirement_types.victory, self.requirement_nodes)
+    end
 
     if self.configuration.skip_custom_callbacks then
         for _, customFun in pairs(_G.dependency_graph_lib_custom_callbacks) do
