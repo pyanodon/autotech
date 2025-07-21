@@ -98,6 +98,7 @@ function (object, requirement_nodes, object_nodes)
     object_node_functor:add_fulfiller_for_object_requirement(object, entity.loot, object_types.item, item_requirements.create, object_nodes)
     object_node_functor:add_fulfiller_for_object_requirement(object, entity.corpse, object_types.entity, entity_requirements.instantiate, object_nodes)
     object_node_functor:add_fulfiller_for_object_requirement(object, entity.folded_state_corpse, object_types.entity, entity_requirements.instantiate, object_nodes)
+    object_node_functor:add_fulfiller_for_object_requirement(object, entity.shadow_slave_entity, object_types.entity, entity_requirements.instantiate, object_nodes)
 
     -- Support for PyAL-style module requirements
     if entity.dependency_graph_lib_force_require_module_categories then
@@ -210,6 +211,16 @@ function (object, requirement_nodes, object_nodes)
     --     end
     if entity.type == "rocket-silo" then
         object_node_functor:add_fulfiller_for_independent_requirement(object, requirement_types.rocket_silo, requirement_nodes)
+        object_node_functor:add_fulfiller_for_object_requirement(object, entity.cargo_pod_entity, object_types.entity, entity_requirements.instantiate, object_nodes)
+    end
+    if entity.type == "cargo-pod" then
+        object_node_functor:add_fulfiller_for_object_requirement(object, entity.spawned_container, object_types.entity, entity_requirements.instantiate, object_nodes)
+    end
+    if entity.type == "cargo-bay" and entity.hatch_definitions then
+        object_node_functor:add_fulfiller_for_object_requirement(object, entity.hatch_definitions.cargo_unit_entity_to_spawn, object_types.entity, entity_requirements.instantiate, object_nodes)
+        for _, receiving_cargo_unit in pairs(entity.hatch_definitions.receiving_cargo_units or {}) do
+            object_node_functor:add_fulfiller_for_object_requirement(object, receiving_cargo_unit, object_types.entity, entity_requirements.instantiate, object_nodes)
+        end
     end
     if entity.type == "cargo-landing-pad" then
         object_node_functor:add_fulfiller_for_independent_requirement(object, requirement_types.cargo_landing_pad, requirement_nodes)
@@ -221,10 +232,6 @@ function (object, requirement_nodes, object_nodes)
         object_node_functor:add_independent_requirement_to_object(object, requirement_types.rocket_silo, requirement_nodes)
         object_node_functor:add_fulfiller_for_independent_requirement(object, requirement_types.space_platform, requirement_nodes)
     end
-    
-    --     if entity.type == "cargo-pod" then
-    --         self:add_disjunctive_dependent(nodes, node_types.entity_node, entity.spawned_container, "spawned container", entity_verbs.instantiate)
-    --     end
     
     --     if is_elevated_rail[entity.type] then
     --         self:add_dependency(nodes, node_types.entity_node, 1, "requires any rail-support prototype", entity_verbs.requires_rail_supports)
