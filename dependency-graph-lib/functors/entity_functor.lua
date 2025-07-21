@@ -163,6 +163,12 @@ function (object, requirement_nodes, object_nodes)
         end
         object_node_functor:add_fulfiller_for_object_requirement(object, entity.captured_spawner_entity, object_types.entity, entity_requirements.instantiate, object_nodes)
     end
+
+    if entity.type == "segmented-unit" and entity.segment_engine then
+        for _, segment in pairs(entity.segment_engine.segments or {}) do
+            object_node_functor:add_fulfiller_for_object_requirement(object, segment, object_types.entity, entity_requirements.instantiate, object_nodes)
+        end
+    end
     
     if entity.type == "lab" then
         local inputs = entity.inputs
