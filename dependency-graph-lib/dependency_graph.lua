@@ -111,6 +111,7 @@ function dependency_graph:create_nodes()
     requirement_node:new_independent_requirement(requirement_types.victory, self.requirement_nodes, self.configuration)
 
     self.requirement_nodes:register_requirement_type(requirement_types.heat)
+    requirement_node:new({name = "30", printable_name = "30 (heat)", source = "heat"}, self.requirement_nodes, self.configuration) -- All frozen planets are hardcoded to 30 degrees.
 
     ---@param table FactorioThingGroup
     ---@param requirement_type RequirementType
