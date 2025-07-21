@@ -2,9 +2,9 @@ local object_types = require "dependency-graph-lib.object_nodes.object_types"
 local object_node_descriptor = require "dependency-graph-lib.object_nodes.object_node_descriptor"
 local object_node_functor = require "dependency-graph-lib.object_nodes.object_node_functor"
 local requirement_node = require "dependency-graph-lib.requirement_nodes.requirement_node"
-local autoplace_control_requirements = require "dependency-graph-lib.requirements.autoplace_control_requirements"
 local planet_requirements = require "dependency-graph-lib.requirements.planet_requirements"
 local tile_requirements = require "dependency-graph-lib.requirements.tile_requirements"
+local entity_requirements = require "dependency-graph-lib.requirements.entity_requirements"
 
 local planet_functor = object_node_functor:new(object_types.planet,
 function (object, requirement_nodes)
@@ -33,7 +33,7 @@ function (object, requirement_nodes, object_nodes)
 
     if autoplace_settings.entity then
         for k, _ in pairs(autoplace_settings.entity.settings or {}) do
-            object_node_functor:add_fulfiller_for_object_requirement(object, k, object_types.autoplace_control, autoplace_control_requirements.create, object_nodes)
+            object_node_functor:add_fulfiller_for_object_requirement(object, k, object_types.entity, entity_requirements.autoplace, object_nodes)
         end
     end
 

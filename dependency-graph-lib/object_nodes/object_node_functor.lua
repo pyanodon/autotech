@@ -93,9 +93,20 @@ end
 ---@param fulfiller_type ObjectType
 ---@param object_nodes ObjectNodeStorage
 function object_node_functor:reverse_add_fulfiller_for_object_requirement(requirer, requirement, fulfiller_name, fulfiller_type, object_nodes)
+    assert(requirer)
+    assert(requirement)
+    assert(fulfiller_name)
+    assert(fulfiller_type)
+    assert(object_nodes)
+
     local node = requirer.requirements[requirement]
     local descriptor = object_node_descriptor:new(fulfiller_name, fulfiller_type)
     local fulfiller = object_nodes:find_object_node(descriptor)
+
+    if not fulfiller or not descriptor then
+        error("Could not find object node matching " .. fulfiller_name .. " " .. fulfiller_type)
+    end
+
     node:add_fulfiller(fulfiller)
 end
 
@@ -130,21 +141,22 @@ function object_node_functor:add_fulfiller_for_object_requirement(fulfiller, nam
         return
     end
     local function actualWork(name)
+        if not name then error(serpent.block(nameOrTable)) end
         local descriptor = object_node_descriptor:new(name, object_type)
         local target_node = object_nodes:find_object_node(descriptor)
         if target_node == nil then
-            error("Cannot find requirement object " .. descriptor.printable_name)
+            error("Cannot find requirement object " .. name .. " " .. object_type .. ".")
         end
         local requirement_node = target_node.requirements[requirement]
         if requirement_node == nil then
-            error("Cannot find requirement " .. requirement)
+            error("Cannot find requirement \"" .. requirement .. "\" on " .. name .. " " .. object_type .. ".")
         end
         requirement_node:add_fulfiller(fulfiller)
     end
     function checkInnerName(actual_node_name)
         if optional_inner_name == nil then
             if type(actual_node_name) == "table" then
-                actualWork(actual_node_name["name"])
+                actualWork(actual_node_name["name"] or actual_node_name["item"] or actual_node_name["fluid"])
             else
                 actualWork(actual_node_name)
             end

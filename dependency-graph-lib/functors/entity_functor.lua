@@ -217,8 +217,8 @@ function (object, requirement_nodes, object_nodes)
     --         self:add_dependency(nodes, node_types.entity_node, 1, "requires any rail prototype", entity_verbs.requires_rail)
     --     end
     
-    if entity.autoplace then
-        object_node_functor:reverse_add_fulfiller_for_object_requirement(object, entity_requirements.instantiate, entity.autoplace.control or entity.name, object_types.autoplace_control, object_nodes)
+    if entity.autoplace and entity.autoplace.default_enabled then
+        object_node_functor:reverse_add_fulfiller_for_object_requirement(object, entity_requirements.autoplace, entity.autoplace.control or entity.name, object_types.entity, object_nodes)
     end
 
     for _, unit_spawn_definition in pairs(entity.result_units or {}) do
