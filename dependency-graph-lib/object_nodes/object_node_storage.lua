@@ -33,7 +33,11 @@ end
 ---@param descriptor ObjectNodeDescriptor
 ---@returns ObjectNode
 function object_node_storage:find_object_node(descriptor)
-    return self.nodes[descriptor.object_type][descriptor.name]
+    local node = self.nodes[descriptor.object_type][descriptor.name]
+    if not node then
+        error("Unable to find node based on descriptor: " .. serpent.block(descriptor))
+    end
+    return node
 end
 
 ---@param functor fun(object_type: ObjectType, object: ObjectNode)

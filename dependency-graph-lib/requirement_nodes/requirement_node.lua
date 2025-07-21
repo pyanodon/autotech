@@ -70,8 +70,8 @@ end
 ---@return RequirementNode
 function requirement_node:create_or_get_typed_requirement(name, source, requirement_nodes, configuration)
     local descriptor = requirement_descriptor:new_typed_requirement_descriptor(name, source)
-    local maybe_node = requirement_nodes:find_requirement_node(descriptor)
-    if maybe_node then
+    local status, maybe_node = pcall(function() return requirement_nodes:find_requirement_node(descriptor) end)
+    if status then
         return maybe_node
     end
     return self:new(descriptor, requirement_nodes, configuration)

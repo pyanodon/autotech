@@ -25,6 +25,15 @@ function (object, requirement_nodes, object_nodes)
         --object_node_functor:add_fulfiller_for_object_requirement(object, object_node_descriptor:unique_node(object_types.heat), entity_requirements.instantiate, object_nodes)
     end
 
+    for _, asteroid in pairs(planet.asteroid_spawn_definitions or {}) do
+        local type = asteroid.type or "entity"
+        if type == "asteroid" then
+            object_node_functor:add_fulfiller_for_object_requirement(object, asteroid.asteroid, object_types.entity, entity_requirements.instantiate, object_nodes)
+        elseif type == "entity" then
+            object_node_functor:add_fulfiller_for_object_requirement(object, asteroid.asteroid, object_types.entity, entity_requirements.instantiate, object_nodes)
+        end
+    end
+
     local mgs = planet.map_gen_settings
     if not mgs then return end
 

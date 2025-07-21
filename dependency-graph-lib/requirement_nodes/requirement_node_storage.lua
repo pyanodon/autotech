@@ -36,7 +36,11 @@ end
 ---@param descriptor RequirementNodeDescriptor
 ---@returns RequirementNode
 function requirement_node_storage:find_requirement_node(descriptor)
-    return self.nodes[descriptor.source][descriptor.name]
+    local node = self.nodes[descriptor.source][descriptor.name]
+    if not node then
+        error("Unable to find requirement node based on descriptor: " .. serpent.block(descriptor))
+    end
+    return node
 end
 
 ---@param functor fun(requirement_type: RequirementType|ObjectNode, requirement: RequirementNode)

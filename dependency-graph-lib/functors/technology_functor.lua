@@ -29,9 +29,6 @@ function (object, requirement_nodes, object_nodes)
     local function add_technology_unlock(name, type)
         local descriptor = object_node_descriptor:new(name, type)
         local item_to_give = object_nodes:find_object_node(descriptor)
-        if item_to_give == nil then
-            error("Could not find node for " .. descriptor.printable_name)
-        end
         if object.configuration.verbose_logging then
             log("Add technology unlock " .. descriptor.printable_name .. " to tech " .. object.printable_name)
         end
