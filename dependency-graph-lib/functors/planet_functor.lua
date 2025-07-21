@@ -28,10 +28,6 @@ function (object, requirement_nodes, object_nodes)
     local mgs = planet.map_gen_settings
     if not mgs then return end
 
-    for control in pairs(mgs.autoplace_controls or {}) do
-        object_node_functor:add_fulfiller_for_object_requirement(object, control, object_types.autoplace_control, autoplace_control_requirements.create, object_nodes)
-    end
-
     local autoplace_settings = mgs.autoplace_settings
     if not autoplace_settings then return end
 
@@ -39,6 +35,9 @@ function (object, requirement_nodes, object_nodes)
         for k, _ in pairs(autoplace_settings.entity.settings or {}) do
             object_node_functor:add_fulfiller_for_object_requirement(object, k, object_types.autoplace_control, autoplace_control_requirements.create, object_nodes)
         end
+    end
+
+    if autoplace_settings.tile then
         for k, _ in pairs(autoplace_settings.tile.settings or {}) do
             object_node_functor:add_fulfiller_for_object_requirement(object, k, object_types.tile, tile_requirements.place, object_nodes)
         end

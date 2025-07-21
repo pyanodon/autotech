@@ -104,6 +104,8 @@ end
 
 ---@param fulfiller ObjectNode
 function requirement_node:add_fulfiller(fulfiller)
+    if not fulfiller then assert(fulfiller, serpent.block(self)) end
+
     local nodes_that_can_fulfil_this = self.nodes_that_can_fulfil_this
     nodes_that_can_fulfil_this[#nodes_that_can_fulfil_this+1] = fulfiller
     ---@diagnostic disable-next-line: invisible

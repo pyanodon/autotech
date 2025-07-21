@@ -12,7 +12,6 @@ local requirement_node = require "dependency-graph-lib.requirement_nodes.require
 local requirement_types = require "dependency-graph-lib.requirement_nodes.requirement_types"
 local requirement_node_storage = require "dependency-graph-lib.requirement_nodes.requirement_node_storage"
 
-local autoplace_control_functor = require "dependency-graph-lib.functors.autoplace_control_functor"
 local entity_functor = require "dependency-graph-lib.functors.entity_functor"
 local fluid_functor = require "dependency-graph-lib.functors.fluid_functor"
 local item_functor = require "dependency-graph-lib.functors.item_functor"
@@ -29,7 +28,6 @@ local planet_requirements = require "dependency-graph-lib.requirements.planet_re
 
 ---@type table<ObjectType, ObjectNodeFunctor>
 local functor_map = {}
-functor_map[object_types.autoplace_control] = autoplace_control_functor
 functor_map[object_types.entity] = entity_functor
 functor_map[object_types.fluid] = fluid_functor
 functor_map[object_types.item] = item_functor
@@ -151,9 +149,6 @@ function dependency_graph:create_nodes()
     process_requirement_type(self.data_raw["recipe-category"], requirement_types.recipe_category)
     process_requirement_type(self.data_raw["resource-category"], requirement_types.resource_category)
 
-    process_object_types(self.data_raw["autoplace-control"], autoplace_control_functor)
-    process_object_types(self.data_raw["fish"], autoplace_control_functor)
-    process_object_types(self.data_raw["simple-entity"], autoplace_control_functor)
     process_object_types(self.data_raw["fluid"], fluid_functor)
     process_object_types(self.data_raw["recipe"], recipe_functor)
     process_object_types(self.data_raw["technology"], technology_functor)
