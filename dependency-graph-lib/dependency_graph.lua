@@ -213,7 +213,7 @@ function dependency_graph:run_custom_mod_dependencies()
         victory_functor:add_fulfiller_for_independent_requirement(pyrrhic_victory_node, requirement_types.victory, self.requirement_nodes)
     elseif mods["space-age"] then
         local promethium_science_pack_node = self.object_nodes:find_object_node(object_node_descriptor:new("promethium-science-pack", object_types.item))
-        victory_functor:add_fulfiller_for_independent_requirement(pyrrhic_victory_node, requirement_types.victory, self.requirement_nodes)
+        victory_functor:add_fulfiller_for_independent_requirement(promethium_science_pack_node, requirement_types.victory, self.requirement_nodes)
     else
         local satellite_node = self.object_nodes:find_object_node(object_node_descriptor:new("satellite", object_types.item))
         victory_functor:add_fulfiller_for_independent_requirement(satellite_node, requirement_types.victory, self.requirement_nodes)
@@ -272,7 +272,7 @@ function dependency_graph:verify_victory_reachable_recipe_graph()
     if victory_reachable then
         log("The game can be won with the current mods.")
     else
-        error("Error: no victory condition can be reached. It's possible that this is a mod not informing dependency-graph-lib about dependencies introduced in the mod correctly or a bug in dependency-graph-lib.")
+        error("Error: no victory condition can be reached. It's possible that this is a mod not informing dependency-graph-lib about dependencies introduced in the mod correctly or a bug in dependency-graph-lib.\nUnresolved dependencies: " .. self.victory_node:print_dependencies())
     end
 end
 
