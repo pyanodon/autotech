@@ -91,6 +91,15 @@ function auto_tech:vanilla_massaging()
             recipe.ignore_in_pypp = true
         end
     end
+    -- Recycling recipes cause loops (and they never lead to new things anyway)
+    for name, recipe in pairs(data.raw["recipe"]) do
+        if recipe.category == "recycling" then
+            if self.configuration.verbose_logging then
+                log("Marking recycling recipe " .. name .. " as ignore_in_pypp")
+            end
+            recipe.ignore_in_pypp = true
+        end
+    end
 end
 
 function auto_tech:determine_mandatory_dependencies()
