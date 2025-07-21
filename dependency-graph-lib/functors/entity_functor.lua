@@ -202,6 +202,9 @@ function (object, requirement_nodes, object_nodes)
     if entity.type == "cargo-landing-pad" then
         object_node_functor:add_fulfiller_for_independent_requirement(object, requirement_types.cargo_landing_pad, requirement_nodes)
     end
+    if entity.type == "capture-robot" then
+        object_node_functor:add_fulfiller_for_independent_requirement(object, requirement_types.rocket_silo, requirement_nodes)
+    end
     if entity.type == "space-platform-hub" then
         object_node_functor:add_independent_requirement_to_object(object, requirement_types.rocket_silo, requirement_nodes)
         object_node_functor:add_fulfiller_for_independent_requirement(object, requirement_types.space_platform, requirement_nodes)

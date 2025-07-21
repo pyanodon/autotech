@@ -63,7 +63,14 @@ function (object, requirement_nodes, object_nodes)
             object_node_functor:reverse_add_fulfiller_for_object_requirement(object, technology_requirements.trigger, trigger.item, object_types.item, object_nodes)
             object_node_functor:add_independent_requirement_to_object(object, requirement_types.rocket_silo, requirement_nodes)
         elseif trigger.type == "create-space-platform" then
-            object_node_functor:add_independent_requirement_to_object(object, requirement_types.space_platform, requirement_nodes)
+            object_node_functor:add_independent_requirement_to_object(object, requirement_types.rocket_silo, requirement_nodes)
+        elseif trigger.type == "capture-spawner" then
+            if trigger.entity then
+                object_node_functor:reverse_add_fulfiller_for_object_requirement(object, technology_requirements.trigger, trigger.entity, object_types.entity, object_nodes)
+            end
+            object_node_functor:add_independent_requirement_to_object(object, requirement_types.capture_robot, requirement_nodes)
+        else
+            error("Unknown trigger tech type " .. trigger.type)
         end
     end
 end)

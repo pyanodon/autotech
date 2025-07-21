@@ -12,6 +12,7 @@ local requirement_types = {
     rocket_silo = "rocket_silo",
     space_platform = "space_platform",
     cargo_landing_pad = "cargo_landing_pad",
+    capture_robot = "capture_robot",
     victory = "victory",
 }
 return requirement_types

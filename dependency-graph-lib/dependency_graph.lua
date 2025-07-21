@@ -107,6 +107,7 @@ function dependency_graph:create_nodes()
     requirement_node:new_independent_requirement(requirement_types.space_platform, self.requirement_nodes, self.configuration)
     requirement_node:new_independent_requirement(requirement_types.rocket_silo, self.requirement_nodes, self.configuration)
     requirement_node:new_independent_requirement(requirement_types.cargo_landing_pad, self.requirement_nodes, self.configuration)
+    requirement_node:new_independent_requirement(requirement_types.capture_robot, self.requirement_nodes, self.configuration)
     requirement_node:new_independent_requirement(requirement_types.victory, self.requirement_nodes, self.configuration)
 
     self.requirement_nodes:register_requirement_type(requirement_types.heat)
