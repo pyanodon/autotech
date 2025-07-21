@@ -100,6 +100,7 @@ function (object, requirement_nodes, object_nodes)
     object_node_functor:add_fulfiller_for_object_requirement(object, entity.folded_state_corpse, object_types.entity, entity_requirements.instantiate, object_nodes)
     object_node_functor:add_fulfiller_for_object_requirement(object, entity.character_corpse, object_types.entity, entity_requirements.instantiate, object_nodes)
     object_node_functor:add_fulfiller_for_object_requirement(object, entity.shadow_slave_entity, object_types.entity, entity_requirements.instantiate, object_nodes)
+    object_node_functor:add_fulfiller_for_object_requirement(object, entity.deconstruction_alternative, object_types.entity, entity_requirements.instantiate, object_nodes)
 
     -- Support for PyAL-style module requirements
     if entity.dependency_graph_lib_force_require_module_categories then
