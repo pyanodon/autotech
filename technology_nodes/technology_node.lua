@@ -1,6 +1,6 @@
-local object_types = require "__dependency-graph-lib__/object_nodes/object_types"
-local concat_requirements = require "__dependency-graph-lib__/utils/concat_requirements"
-local deque = require "__dependency-graph-lib__/utils/deque"
+local object_types = require "dependency-graph-lib/object_nodes/object_types"
+local concat_requirements = require "dependency-graph-lib/utils/concat_requirements"
+local deque = require "dependency-graph-lib/utils/deque"
 local technology_dependency_tracking_node = require "technology_nodes.technology_dependency_tracking_node"
 
 ---Represents a technology

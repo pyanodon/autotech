@@ -8,8 +8,7 @@
   "homepage": "https://github.com/Septiple/autotech",
   "description": "Overhauls the technology tree to make sure prerequisites are set based on unlocked recipes.",
   "dependencies": [
-    "base >= 2.0.0",
-    "dependency-graph-lib >= 0.1.6"
+    "base >= 2.0.0"
   ],
   "package": {
     "ignore": [],

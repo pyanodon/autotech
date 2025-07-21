@@ -6,7 +6,7 @@ package.searchers[#package.searchers + 1] = function(libraryname)
     return function() return result end
 end
 
-local json = require "__dependency-graph-lib__/utils/json"
+local json = require "dependency-graph-lib/utils/json"
 local autotech_class = require "new_auto_tech"
 
 local start_time = os.time()
@@ -34,7 +34,7 @@ if f == nil then
 end
 
 print("Loading defines table...")
-_G.defines = require "__dependency-graph-lib__/utils/defines"
+_G.defines = require "dependency-graph-lib/utils/defines"
 
 print("Parsing data raw JSON...")
 _G.data = {}

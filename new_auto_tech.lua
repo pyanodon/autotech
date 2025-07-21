@@ -1,13 +1,13 @@
 --- @module "definitions"
 
-local deque = require "__dependency-graph-lib__/utils/deque"
-local object_types = require "__dependency-graph-lib__/object_nodes/object_types"
+local deque = require "dependency-graph-lib/utils/deque"
+local object_types = require "dependency-graph-lib/object_nodes/object_types"
 local reachability = require "utils/reachability"
 
 local technology_node = require "technology_nodes.technology_node"
 local technology_node_storage = require "technology_nodes.technology_node_storage"
 
-local dependency_graph_lib = require "__dependency-graph-lib__/dependency_graph"
+local dependency_graph_lib = require "dependency-graph-lib/dependency_graph"
 
 --- @class auto_tech
 --- @field private configuration Configuration
