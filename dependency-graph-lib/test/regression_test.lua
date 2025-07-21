@@ -1,5 +1,5 @@
-local apply_vanilla_rules = require "apply_vanilla_rules"
-local dependency_graph = require "dependency_graph"
+local apply_vanilla_rules = require "dependency-graph-lib.apply_vanilla_rules"
+local dependency_graph = require "dependency-graph-lib.dependency_graph"
 local json = require "utils/json"
 
 local start_time = os.time()

@@ -1,11 +1,12 @@
-package.path = '../dependency-graph-lib/?.lua;' .. package.path
+-- package.path = '../dependency-graph-lib/?.lua;' .. package.path
 
-package.searchers[#package.searchers + 1] = function(libraryname)
-    local chopped = libraryname:gsub("^__dependency%-graph%-lib__/", "")
-    local result = require(chopped)
-    return function() return result end
-end
+-- package.searchers[#package.searchers + 1] = function(libraryname)
+--     local chopped = libraryname:gsub("^__dependency%-graph%-lib__/", "")
+--     local result = require(chopped)
+--     return function() return result end
+-- end
 
+require "dependency-graph-lib/test/regression_test"
 local json = require "dependency-graph-lib/utils/json"
 local autotech_class = require "new_auto_tech"
 

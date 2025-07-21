@@ -9,7 +9,7 @@
             "request": "launch",
             "name": "Run autotech test",
             "program": "${workspaceFolder}\\test\\regression_test.lua",
-            "arg": ["${workspaceFolder}\\..\\dependency-graph-lib\\test\\filtered_input\\Base-data-raw-dump.json", ">", "last_output.txt"],
+            "arg": ["${workspaceFolder}\\dependency-graph-lib\\test\\filtered_input\\Base-data-raw-dump.json", ">", "last_output.txt"],
         },
         {
             // Uses the Factorio Modding Toolkit extension
