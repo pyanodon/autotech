@@ -32,6 +32,12 @@ function (object, requirement_nodes, object_nodes)
         end
     end
 
+    if planet.lightning_properties then
+        for _, lightning in pairs(planet.lightning_properties.lightning_types or {}) do
+            object_node_functor:add_fulfiller_for_object_requirement(object, lightning, object_types.entity, entity_requirements.instantiate, object_nodes)
+        end
+    end
+
     local mgs = planet.map_gen_settings
     if not mgs then return end
 
