@@ -157,6 +157,12 @@ function (object, requirement_nodes, object_nodes)
         end)
     end
 
+    if entity.type == "unit-spawner" then
+        for _, unit in pairs(entity.result_units or {}) do
+            object_node_functor:add_fulfiller_for_object_requirement(object, unit.unit, object_types.entity, entity_requirements.instantiate, object_nodes)
+        end
+        object_node_functor:add_fulfiller_for_object_requirement(object, entity.captured_spawner_entity, object_types.entity, entity_requirements.instantiate, object_nodes)
+    end
     
     if entity.type == "lab" then
         local inputs = entity.inputs
