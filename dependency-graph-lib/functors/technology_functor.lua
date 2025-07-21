@@ -19,7 +19,9 @@ function (object, requirement_nodes)
         requirement_node:add_new_object_dependent_requirement(technology_requirements.researched_with, object, requirement_nodes, object.configuration)
         requirement_node:add_new_object_dependent_requirement_table(tech.unit.ingredients, technology_requirements.science_pack, object, requirement_nodes, object.configuration, 1)
     elseif tech.research_trigger then
-        requirement_node:add_new_object_dependent_requirement(technology_requirements.trigger, object, requirement_nodes, object.configuration)
+        if tech.research_trigger.type ~= "capture-spawner" and tech.research_trigger.type ~= "create-space-platform" then
+            requirement_node:add_new_object_dependent_requirement(technology_requirements.trigger, object, requirement_nodes, object.configuration)
+        end
     end
 end,
 function (object, requirement_nodes, object_nodes)
