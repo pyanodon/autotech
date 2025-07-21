@@ -33,7 +33,7 @@ function (object, requirement_nodes, object_nodes)
 
     if autoplace_settings.entity then
         for k, _ in pairs(autoplace_settings.entity.settings or {}) do
-            object_node_functor:add_fulfiller_for_object_requirement(object, k, object_types.entity, entity_requirements.autoplace, object_nodes)
+            object_node_functor:add_fulfiller_for_object_requirement(object, k, object_types.entity, entity_requirements.instantiate, object_nodes)
         end
     end
 

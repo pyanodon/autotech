@@ -1,5 +1,6 @@
 local object_types = require "dependency-graph-lib.object_nodes.object_types"
 local object_node_functor = require "dependency-graph-lib.object_nodes.object_node_functor"
+local object_node_descriptor = require "dependency-graph-lib.object_nodes.object_node_descriptor"
 local requirement_node = require "dependency-graph-lib.requirement_nodes.requirement_node"
 local requirement_types = require "dependency-graph-lib.requirement_nodes.requirement_types"
 local item_requirements = require "dependency-graph-lib.requirements.item_requirements"
@@ -217,8 +218,9 @@ function (object, requirement_nodes, object_nodes)
     --         self:add_dependency(nodes, node_types.entity_node, 1, "requires any rail prototype", entity_verbs.requires_rail)
     --     end
     
-    if entity.autoplace and entity.autoplace.default_enabled then
-        object_node_functor:reverse_add_fulfiller_for_object_requirement(object, entity_requirements.autoplace, entity.autoplace.control or entity.name, object_types.entity, object_nodes)
+    -- Does this entity get autoplaced on all planets? (this case is common in 1.1, rare in space age.)
+    if entity.autoplace and entity.autoplace.default_enabled ~= false then
+        object.requirements[entity_requirements.instantiate]:add_fulfiller(object_nodes:find_object_node(object_node_descriptor:unique_node(object_types.start)))
     end
 
     for _, unit_spawn_definition in pairs(entity.result_units or {}) do
