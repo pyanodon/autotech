@@ -6,6 +6,7 @@ local requirement_descriptor = require "dependency-graph-lib.requirement_nodes.r
 local item_requirements = require "dependency-graph-lib.requirements.item_requirements"
 local fluid_requirements = require "dependency-graph-lib.requirements.fluid_requirements"
 local entity_requirements = require "dependency-graph-lib.requirements.entity_requirements"
+local tile_requirements = require "dependency-graph-lib.requirements.tile_requirements"
 
 ---Defines how to register requirements and dependencies for a specific object type.
 ---@class ObjectNodeFunctor
@@ -247,30 +248,66 @@ end
 ---@param object_nodes ObjectNodeStorage
 function object_node_functor:add_fulfiller_to_triggerlike_object(fulfiller, triggerlike_possibility_table, object_nodes)
     if triggerlike_possibility_table == nil then return end
-    if not triggerlike_possibility_table.action_delivery then return end
+
+    function parse_trigger_effect(effect)
+        if type(effect) ~= "table" then return end
+
+        if (effect.type == "create-explosion" or effect.type == "create-entity") and effect.entity_name then
+            local descriptor = object_node_descriptor:new(effect.entity_name, object_types.entity)
+            object_nodes:find_object_node(descriptor).requirements[entity_requirements.instantiate]:add_fulfiller(fulfiller)
+        elseif effect.type == "projectile" then
+            local descriptor = object_node_descriptor:new(effect.projectile, object_types.entity)
+            object_nodes:find_object_node(descriptor).requirements[entity_requirements.instantiate]:add_fulfiller(fulfiller)
+        elseif effect.type == "create-asteroid-chunk" then
+            local descriptor = object_node_descriptor:new(effect.asteroid_name, object_types.entity)
+            object_nodes:find_object_node(descriptor).requirements[entity_requirements.instantiate]:add_fulfiller(fulfiller)
+        elseif effect.type == "create-sticker" then
+            local descriptor = object_node_descriptor:new(effect.sticker, object_types.entity)
+            object_nodes:find_object_node(descriptor).requirements[entity_requirements.instantiate]:add_fulfiller(fulfiller)
+        elseif effect.type == "create-fire" then
+            local descriptor = object_node_descriptor:new(effect.entity_name, object_types.entity)
+            object_nodes:find_object_node(descriptor).requirements[entity_requirements.instantiate]:add_fulfiller(fulfiller)
+            object_node_functor:add_fulfiller_to_triggerlike_object(fulfiller, effect.non_colliding_fail_result, object_nodes)
+        elseif effect.type == "nested-result" then
+            object_node_functor:add_fulfiller_to_triggerlike_object(fulfiller, effect.action, object_nodes)
+        elseif effect.type == "insert-item" then
+            local descriptor = object_node_descriptor:new(effect.item, object_types.item)
+            object_nodes:find_object_node(descriptor).requirements[item_requirements.create]:add_fulfiller(fulfiller)
+        elseif effect.type == "set-tile" then
+            local descriptor = object_node_descriptor:new(effect.tile_name, object_types.tile)
+            object_nodes:find_object_node(descriptor).requirements[tile_requirements.place]:add_fulfiller(fulfiller)
+        end
+    end
 
     function inner_function(effects)
         if not effects then return end
 
         if effects.type then
-            inner_function({effects})
+            parse_trigger_effect(effects)
             return
         end
 
         for _, effect in pairs(effects) do
-            if (effect.type == "create-explosion" or effect.type == "create-entity") and effect.entity_name then
-                local descriptor = object_node_descriptor:new(effect.entity_name, object_types.entity)
-                object_nodes:find_object_node(descriptor).requirements[entity_requirements.instantiate]:add_fulfiller(fulfiller)
-            elseif effect.type == "projectile" then
-                local descriptor = object_node_descriptor:new(effect.projectile, object_types.entity)
-                object_nodes:find_object_node(descriptor).requirements[entity_requirements.instantiate]:add_fulfiller(fulfiller)
-            end
+            parse_trigger_effect(effect)
         end
     end
     
-    inner_function(triggerlike_possibility_table.action_delivery)
-    inner_function(triggerlike_possibility_table.action_delivery.source_effects)
-    inner_function(triggerlike_possibility_table.action_delivery.target_effects)
+    parse_trigger_effect(triggerlike_possibility_table)
+    if triggerlike_possibility_table.action_delivery then
+        inner_function(triggerlike_possibility_table.action_delivery)
+        inner_function(triggerlike_possibility_table.action_delivery.source_effects)
+        inner_function(triggerlike_possibility_table.action_delivery.target_effects)
+    else
+        for i = 1, #triggerlike_possibility_table do
+            if triggerlike_possibility_table[i] then
+                local action_delivery = triggerlike_possibility_table[i]
+                if action_delivery.action_delivery then action_delivery = action_delivery.action_delivery end
+                inner_function(action_delivery)
+                inner_function(action_delivery.source_effects)
+                inner_function(action_delivery.target_effects)
+            end
+        end
+    end
 end
 
 return object_node_functor

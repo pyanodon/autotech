@@ -81,6 +81,7 @@ function (object, requirement_nodes, object_nodes)
         if minable.required_fluid then
             object_node_functor:reverse_add_fulfiller_for_object_requirement(object, entity_requirements.required_mining_fluid, minable.required_fluid, object_types.fluid, object_nodes)
         end
+        object_node_functor:add_fulfiller_to_triggerlike_object(object, minable.mining_trigger, object_nodes)
     end
     
     if entity.placeable_by then
@@ -94,6 +95,28 @@ function (object, requirement_nodes, object_nodes)
     object_node_functor:add_fulfiller_for_object_requirement(object, entity.character_corpse, object_types.entity, entity_requirements.instantiate, object_nodes)
     object_node_functor:add_fulfiller_for_object_requirement(object, entity.shadow_slave_entity, object_types.entity, entity_requirements.instantiate, object_nodes)
     object_node_functor:add_fulfiller_for_object_requirement(object, entity.deconstruction_alternative, object_types.entity, entity_requirements.instantiate, object_nodes)
+
+    object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.dying_trigger_effect, object_nodes)
+    object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.damaged_trigger_effect, object_nodes)
+    object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.created_effect, object_nodes)
+    object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.regular_trigger_effect, object_nodes)
+    object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.ended_in_water_trigger_effect, object_nodes)
+    object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.ended_on_ground_trigger_effect, object_nodes)
+    object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.drive_over_tie_trigger, object_nodes)
+    object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.drive_over_elevated_tie_trigger, object_nodes)
+    object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.leg_hit_the_ground_trigger, object_nodes)
+    object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.leg_hit_the_ground_when_attacking_trigger, object_nodes)
+    object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.crash_trigger, object_nodes)
+    object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.stop_trigger, object_nodes)
+    object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.destroy_action, object_nodes)
+    object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.action, object_nodes)
+    object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.meltdown_action, object_nodes)
+    object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.explosion_effect, object_nodes)
+    object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.tool_attack_result, object_nodes)
+    object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.on_fuel_added_action, object_nodes)
+    object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.on_damage_tick_effect, object_nodes)
+    object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.initial_action, object_nodes)
+    object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.final_action, object_nodes)
 
     -- Support for PyAL-style module requirements
     if entity.dependency_graph_lib_force_require_module_categories then
@@ -164,6 +187,8 @@ function (object, requirement_nodes, object_nodes)
         for _, segment in pairs(entity.segment_engine.segments or {}) do
             object_node_functor:add_fulfiller_for_object_requirement(object, segment, object_types.entity, entity_requirements.instantiate, object_nodes)
         end
+        object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.update_effects, object_nodes)
+        object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.update_effects_while_enraged, object_nodes)
     end
     
     if entity.type == "lab" then
@@ -215,8 +240,16 @@ function (object, requirement_nodes, object_nodes)
     end
     
     if entity.type == "rocket-silo" then
+        object_node_functor:add_fulfiller_for_object_requirement(object, entity.rocket_entity, object_types.entity, entity_requirements.instantiate, object_nodes)
         object_node_functor:add_fulfiller_for_independent_requirement(object, requirement_types.rocket_silo, requirement_nodes)
+        object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.alarm_trigger, object_nodes)
+        object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.clamps_on_trigger, object_nodes)
+        object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.clamps_off_trigger, object_nodes)
+        object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.doors_trigger, object_nodes)
+        object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.raise_rocket_trigger, object_nodes)
+    elseif entity.type == "rocket-silo-rocket" then
         object_node_functor:add_fulfiller_for_object_requirement(object, entity.cargo_pod_entity, object_types.entity, entity_requirements.instantiate, object_nodes)
+        object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.flying_trigger, object_nodes)
     elseif entity.type == "cargo-pod" then
         object_node_functor:add_fulfiller_for_object_requirement(object, entity.spawned_container, object_types.entity, entity_requirements.instantiate, object_nodes)
     elseif entity.type == "cargo-bay" then
@@ -233,6 +266,11 @@ function (object, requirement_nodes, object_nodes)
     elseif entity.type == "space-platform-hub" then
         object_node_functor:add_independent_requirement_to_object(object, requirement_types.rocket_silo, requirement_nodes)
         object_node_functor:add_fulfiller_for_independent_requirement(object, requirement_types.space_platform, requirement_nodes)
+    elseif entity.type == "roboport" then
+        object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.open_door_trigger_effect, object_nodes)
+        object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.close_door_trigger_effect, object_nodes)
+    elseif entity.type == "lightning" then
+        object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.strike_effect, object_nodes)
     end
     
     if is_elevated_rail[entity.type] then
@@ -257,9 +295,7 @@ function (object, requirement_nodes, object_nodes)
         local unit = unit_spawn_definition.unit or unit_spawn_definition[1]
         object_node_functor:add_fulfiller_for_object_requirement(object, unit, object_types.entity, entity_requirements.instantiate, object_nodes)
     end
-
-    common_type_handlers:handle_action(entity.action, object_node_functor, object, object_nodes)
-    common_type_handlers:handle_action(entity.final_action, object_node_functor, object, object_nodes)
+    
     common_type_handlers:handle_attack_parameters(entity.attack_parameters, object_node_functor, object, object_nodes)
 end)
 return entity_functor

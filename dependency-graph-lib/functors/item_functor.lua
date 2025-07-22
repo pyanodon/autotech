@@ -18,6 +18,8 @@ function (object, requirement_nodes, object_nodes)
 
     object_node_functor:add_fulfiller_for_object_requirement(object, item.burnt_result, object_types.item, item_requirements.create, object_nodes)
     object_node_functor:add_fulfiller_for_object_requirement(object, item.spoil_result, object_types.item, item_requirements.create, object_nodes)
+    object_node_functor:add_fulfiller_to_triggerlike_object(object, item.spoil_to_trigger_result and item.spoil_to_trigger_result.trigger or nil, object_nodes)
+    object_node_functor:add_fulfiller_to_triggerlike_object(object, item.destroyed_by_dropping_trigger, object_nodes)
 
     if item.type == "armor" then
         object_node_functor:add_fulfiller_for_typed_requirement(object, item.equipment_grid, requirement_types.equipment_grid, requirement_nodes)

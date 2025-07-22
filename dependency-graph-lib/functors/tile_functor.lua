@@ -4,6 +4,7 @@ local requirement_node = require "dependency-graph-lib.requirement_nodes.require
 local requirement_types = require "dependency-graph-lib.requirement_nodes.requirement_types"
 local fluid_requirements = require "dependency-graph-lib.requirements.fluid_requirements"
 local tile_requirements = require "dependency-graph-lib.requirements.tile_requirements"
+local entity_requirements = require "dependency-graph-lib.requirements.entity_requirements"
 
 local tile_functor = object_node_functor:new(object_types.tile,
 function (object, requirement_nodes)
@@ -20,10 +21,13 @@ function (object, requirement_nodes, object_nodes)
         object_node_functor:add_fulfiller_to_productlike_object(object, minable.results or minable.result, object_nodes)
     end
 
--- if feature_flags.freezing then
---     self:add_disjunctive_dependent(nodes, node_types.tile_node, tile.frozen_variant, "freezing", tile_verbs.place)
---     self:add_disjunctive_dependent(nodes, node_types.tile_node, tile.thawed_variant, "thawing", tile_verbs.place)
--- end
-
+    if feature_flags.freezing then
+        object_node_functor:add_fulfiller_for_object_requirement(object, tile.frozen_variant, object_types.tile, tile_requirements.place, object_nodes)
+        object_node_functor:add_fulfiller_for_object_requirement(object, tile.thawed_variant, object_types.tile, tile_requirements.place, object_nodes)
+    end
+    
+    object_node_functor:add_fulfiller_for_object_requirement(object, tile.dying_explosion, object_types.entity, entity_requirements.instantiate, object_nodes)
+    object_node_functor:add_fulfiller_to_triggerlike_object(object, tile.trigger_effect, object_nodes)
+    object_node_functor:add_fulfiller_to_triggerlike_object(object, tile.default_destroyed_dropped_item_trigger, object_nodes)
 end)
 return tile_functor

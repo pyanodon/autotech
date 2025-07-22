@@ -18,6 +18,8 @@ function (object, requirement_nodes, object_nodes)
     local planet = object.object
     ---@cast planet PlanetDefinition
 
+    object_node_functor:add_fulfiller_to_triggerlike_object(object, planet.player_effects, object_nodes)
+
     if planet.entities_require_heating and feature_flags.freezing then
         -- All frozen planets require at least 30 degrees C.
         object_node_functor:add_typed_requirement_to_object(object, "30", requirement_types.heat, requirement_nodes)
