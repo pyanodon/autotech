@@ -145,7 +145,9 @@ function dependency_graph:create_nodes()
     ---@param functor ObjectNodeFunctor
     local function process_object_types(table, functor)
         for _, object in pairs(table or {}) do
-            process_object_type(object, functor)
+            if not object.is_turd then
+                process_object_type(object, functor)
+            end
         end
     end
 
