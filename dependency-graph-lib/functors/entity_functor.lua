@@ -217,23 +217,20 @@ function (object, requirement_nodes, object_nodes)
     if entity.type == "rocket-silo" then
         object_node_functor:add_fulfiller_for_independent_requirement(object, requirement_types.rocket_silo, requirement_nodes)
         object_node_functor:add_fulfiller_for_object_requirement(object, entity.cargo_pod_entity, object_types.entity, entity_requirements.instantiate, object_nodes)
-    end
-    if entity.type == "cargo-pod" then
+    elseif entity.type == "cargo-pod" then
         object_node_functor:add_fulfiller_for_object_requirement(object, entity.spawned_container, object_types.entity, entity_requirements.instantiate, object_nodes)
-    end
-    if entity.type == "cargo-bay" and entity.hatch_definitions then
-        object_node_functor:add_fulfiller_for_object_requirement(object, entity.hatch_definitions.cargo_unit_entity_to_spawn, object_types.entity, entity_requirements.instantiate, object_nodes)
-        for _, receiving_cargo_unit in pairs(entity.hatch_definitions.receiving_cargo_units or {}) do
-            object_node_functor:add_fulfiller_for_object_requirement(object, receiving_cargo_unit, object_types.entity, entity_requirements.instantiate, object_nodes)
+    elseif entity.type == "cargo-bay" then
+        if entity.hatch_definitions then
+            object_node_functor:add_fulfiller_for_object_requirement(object, entity.hatch_definitions.cargo_unit_entity_to_spawn, object_types.entity, entity_requirements.instantiate, object_nodes)
+            for _, receiving_cargo_unit in pairs(entity.hatch_definitions.receiving_cargo_units or {}) do
+                object_node_functor:add_fulfiller_for_object_requirement(object, receiving_cargo_unit, object_types.entity, entity_requirements.instantiate, object_nodes)
+            end
         end
-    end
-    if entity.type == "cargo-landing-pad" then
+    elseif entity.type == "cargo-landing-pad" then
         object_node_functor:add_fulfiller_for_independent_requirement(object, requirement_types.cargo_landing_pad, requirement_nodes)
-    end
-    if entity.type == "capture-robot" then
-        object_node_functor:add_fulfiller_for_independent_requirement(object, requirement_types.rocket_silo, requirement_nodes)
-    end
-    if entity.type == "space-platform-hub" then
+    elseif entity.type == "capture-robot" then
+        object_node_functor:add_fulfiller_for_independent_requirement(object, requirement_types.capture_robot, requirement_nodes)
+    elseif entity.type == "space-platform-hub" then
         object_node_functor:add_independent_requirement_to_object(object, requirement_types.rocket_silo, requirement_nodes)
         object_node_functor:add_fulfiller_for_independent_requirement(object, requirement_types.space_platform, requirement_nodes)
     end

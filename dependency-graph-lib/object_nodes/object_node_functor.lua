@@ -5,6 +5,7 @@ local object_types = require "dependency-graph-lib.object_nodes.object_types"
 local requirement_descriptor = require "dependency-graph-lib.requirement_nodes.requirement_descriptor"
 local item_requirements = require "dependency-graph-lib.requirements.item_requirements"
 local fluid_requirements = require "dependency-graph-lib.requirements.fluid_requirements"
+local entity_requirements = require "dependency-graph-lib.requirements.entity_requirements"
 
 ---Defines how to register requirements and dependencies for a specific object type.
 ---@class ObjectNodeFunctor
@@ -218,10 +219,10 @@ function object_node_functor:add_productlike_fulfiller(requirement, productlike,
 end
 
 ---@param fulfiller ObjectNode
----@param productlike_possibly_table any
+---@param productlike_possibility_table any
 ---@param object_nodes ObjectNodeStorage
-function object_node_functor:add_fulfiller_to_productlike_object(fulfiller, productlike_possibly_table, object_nodes)
-    if productlike_possibly_table == nil then
+function object_node_functor:add_fulfiller_to_productlike_object(fulfiller, productlike_possibility_table, object_nodes)
+    if productlike_possibility_table == nil then
         return
     end
 
@@ -232,13 +233,44 @@ function object_node_functor:add_fulfiller_to_productlike_object(fulfiller, prod
         object_nodes:find_object_node(descriptor).requirements[type_of_requirement]:add_fulfiller(fulfiller)
     end
 
-    if type(productlike_possibly_table) == "table" then
-        for _, productlike in pairs(productlike_possibly_table or {}) do
+    if type(productlike_possibility_table) == "table" then
+        for _, productlike in pairs(productlike_possibility_table or {}) do
             inner_function(productlike)
         end
     else
-        inner_function(productlike_possibly_table)
+        inner_function(productlike_possibility_table)
     end
+end
+
+---@param fulfiller ObjectNode
+---@param triggerlike_possibility_table any
+---@param object_nodes ObjectNodeStorage
+function object_node_functor:add_fulfiller_to_triggerlike_object(fulfiller, triggerlike_possibility_table, object_nodes)
+    if triggerlike_possibility_table == nil then return end
+    if not triggerlike_possibility_table.action_delivery then return end
+
+    function inner_function(effects)
+        if not effects then return end
+
+        if effects.type then
+            inner_function({effects})
+            return
+        end
+
+        for _, effect in pairs(effects) do
+            if (effect.type == "create-explosion" or effect.type == "create-entity") and effect.entity_name then
+                local descriptor = object_node_descriptor:new(effect.entity_name, object_types.entity)
+                object_nodes:find_object_node(descriptor).requirements[entity_requirements.instantiate]:add_fulfiller(fulfiller)
+            elseif effect.type == "projectile" then
+                local descriptor = object_node_descriptor:new(effect.projectile, object_types.entity)
+                object_nodes:find_object_node(descriptor).requirements[entity_requirements.instantiate]:add_fulfiller(fulfiller)
+            end
+        end
+    end
+    
+    inner_function(triggerlike_possibility_table.action_delivery)
+    inner_function(triggerlike_possibility_table.action_delivery.source_effects)
+    inner_function(triggerlike_possibility_table.action_delivery.target_effects)
 end
 
 return object_node_functor

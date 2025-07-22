@@ -23,6 +23,7 @@ function (object, requirement_nodes, object_nodes)
         object_node_functor:add_fulfiller_for_typed_requirement(object, item.equipment_grid, requirement_types.equipment_grid, requirement_nodes)
     elseif item.type == "ammo" then
         object_node_functor:add_fulfiller_for_typed_requirement(object, item.ammo_category, requirement_types.ammo_category, requirement_nodes)
+        object_node_functor:add_fulfiller_to_triggerlike_object(object, item.ammo_type.action, object_nodes)
     elseif item.type == "gun" and item.attack_parameters then
         object_node_functor:add_fulfiller_for_typed_requirement(object, item.attack_parameters.ammo_categories or item.attack_parameters.ammo_category, requirement_types.ammo_category, requirement_nodes)
     elseif item.type == "module" then
@@ -42,10 +43,7 @@ function (object, requirement_nodes, object_nodes)
             object_node_functor:add_fulfiller_for_object_requirement(object, tile, object_types.tile, tile_requirements.place, object_nodes)
         end
 
-        local success, space_platform_hub = pcall(function() return item.trigger[1].action_delivery.source_effects[1].entity_name end)
-        if success then
-            object_node_functor:add_fulfiller_for_object_requirement(object, space_platform_hub, object_types.entity, entity_requirements.instantiate, object_nodes)
-        end
+        object_node_functor:add_fulfiller_to_triggerlike_object(object, item.trigger, object_nodes)
     elseif item.type == "rail-planner" then
         for _, rail in pairs(item.rails or {}) do
             object_node_functor:add_fulfiller_for_object_requirement(object, rail, object_types.entity, entity_requirements.instantiate, object_nodes)
