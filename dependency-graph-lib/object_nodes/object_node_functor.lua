@@ -97,7 +97,12 @@ function object_node_functor:reverse_add_fulfiller_for_object_requirement(requir
     local node = requirer.requirements[requirement]
     local descriptor = object_node_descriptor:new(fulfiller_name, fulfiller_type)
     local fulfiller = object_nodes:find_object_node(descriptor)
-    node:add_fulfiller(fulfiller)
+    if fulfiller ~= nil then
+        node:add_fulfiller(fulfiller)
+    else
+        -- Could be downgraded to a log maybe
+        error("Object " .. descriptor.name .. " could not be found so cannot fulfill requirement " .. node.printable_name)
+    end
 end
 
 ---@param requirer ObjectNode
