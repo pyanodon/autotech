@@ -78,7 +78,7 @@ end
 function auto_tech:vanilla_massaging()
     for name, recipe in pairs(data.raw["recipe"]) do
         -- Barelling recipes cause tech loops
-        if name ~= "empty-milk-barrel" then
+        if name == "empty-milk-barrel" then
            -- We need to empty milk barrels to complete the pack since you don't create it directly
         elseif string.match(name, "%a+%-barrel") then
             if self.configuration.verbose_logging then
