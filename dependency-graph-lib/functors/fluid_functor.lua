@@ -20,8 +20,10 @@ function (object, requirement_nodes, object_nodes)
 
     if fluid.auto_barrel ~= false then
         local barrel_node = object_nodes:find_object_node(object_node_descriptor:new(fluid.name .. "-barrel", object_types.item))
-        object_node_functor:add_fulfiller_for_object_requirement(object, fluid.name .. "-barrel", object_types.item, item_requirements.create, object_nodes)
-        object_node_functor:add_fulfiller_for_object_requirement(barrel_node, fluid.name, object_types.fluid, fluid_requirements.create, object_nodes)
+        if barrel_node then
+            object_node_functor:add_fulfiller_for_object_requirement(object, fluid.name .. "-barrel", object_types.item, item_requirements.create, object_nodes)
+            object_node_functor:add_fulfiller_for_object_requirement(barrel_node, fluid.name, object_types.fluid, fluid_requirements.create, object_nodes)
+        end
     end
 end)
 return fluid_functor
