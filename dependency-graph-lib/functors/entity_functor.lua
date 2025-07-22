@@ -85,7 +85,15 @@ function (object, requirement_nodes, object_nodes)
     end
     
     if entity.placeable_by then
-        object_node_functor:reverse_add_fulfiller_for_object_requirement(object, entity_requirements.instantiate, entity.placeable_by.item, object_types.item, object_nodes)
+        if type(entity.placeable_by) == "table" then
+            for _, placeable_by in pairs(entity.placeable_by) do
+                if type(placeable_by) == "table" and placeable_by.item then
+                    object_node_functor:reverse_add_fulfiller_for_object_requirement(object, entity_requirements.instantiate, placeable_by.item, object_types.item, object_nodes)
+                end
+            end
+        else
+            object_node_functor:reverse_add_fulfiller_for_object_requirement(object, entity_requirements.instantiate, entity.placeable_by.item, object_types.item, object_nodes)
+        end
     end
     object_node_functor:add_fulfiller_for_object_requirement(object, entity.remains_when_mined, object_types.entity, entity_requirements.instantiate, object_nodes)
     object_node_functor:add_fulfiller_for_object_requirement(object, entity.dying_explosion, object_types.entity, entity_requirements.instantiate, object_nodes)
