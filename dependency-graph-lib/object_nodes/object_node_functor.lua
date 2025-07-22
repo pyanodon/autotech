@@ -98,7 +98,12 @@ function object_node_functor:reverse_add_fulfiller_for_object_requirement(requir
     local node = requirer.requirements[requirement]
     local descriptor = object_node_descriptor:new(fulfiller_name, fulfiller_type)
     local fulfiller = object_nodes:find_object_node(descriptor)
-    node:add_fulfiller(fulfiller)
+    if fulfiller ~= nil then
+        node:add_fulfiller(fulfiller)
+    else
+        -- Could be downgraded to a log maybe
+        error("Object " .. descriptor.name .. " could not be found so cannot fulfill requirement " .. node.printable_name)
+    end
 end
 
 ---@param requirer ObjectNode
@@ -109,7 +114,8 @@ end
 ---@param optional_inner_index? any
 function object_node_functor:reverse_add_fulfiller_for_object_requirement_table(requirer, requirement_prefix, table, fulfiller_type, object_nodes, optional_inner_index)
     for _, entry in pairs(table or {}) do
-        local actualEntry = optional_inner_index and entry[optional_inner_index] or entry
+        local innerEntry = optional_inner_index and entry[optional_inner_index] or entry
+        local actualEntry = type(innerEntry) == "table" and innerEntry.name or innerEntry
         object_node_functor:reverse_add_fulfiller_for_object_requirement(requirer, requirement_prefix .. ": " .. actualEntry, actualEntry, fulfiller_type, object_nodes)
     end
 end
@@ -230,7 +236,7 @@ function object_node_functor:add_fulfiller_to_productlike_object(fulfiller, prod
     function inner_function(productlike)
         local type_of_productlike = productlike.type and (productlike.type == "item" and object_types.item or object_types.fluid) or object_types.item
         local type_of_requirement = productlike.type and (productlike.type == "item" and item_requirements.create or fluid_requirements.create) or item_requirements.create
-        local descriptor = object_node_descriptor:new(productlike.name or productlike, type_of_productlike)
+        local descriptor = object_node_descriptor:new(productlike.name or productlike[1] or productlike, type_of_productlike)
         object_nodes:find_object_node(descriptor).requirements[type_of_requirement]:add_fulfiller(fulfiller)
     end
 

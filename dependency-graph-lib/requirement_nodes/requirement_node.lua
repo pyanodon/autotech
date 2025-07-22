@@ -97,7 +97,8 @@ end
 ---@return RequirementNode
 function requirement_node:add_new_object_dependent_requirement_table(table, requirement_prefix, source_object, requirement_nodes, configuration, optional_inner_index)
     for _, entry in pairs(table or {}) do
-        local actualEntry = optional_inner_index and entry[optional_inner_index] or entry
+        local innerEntry = optional_inner_index and entry[optional_inner_index] or entry
+        local actualEntry = type(innerEntry) == "table" and innerEntry.name or innerEntry
         requirement_node:add_new_object_dependent_requirement(requirement_prefix .. ": " .. actualEntry, source_object, requirement_nodes, configuration)
     end
 end

@@ -76,24 +76,22 @@ function auto_tech:run()
 end
 
 function auto_tech:vanilla_massaging()
-    -- Barelling recipes cause tech loops
     for name, recipe in pairs(data.raw["recipe"]) do
-        if string.match(name, "%a+%-barrel") then
+        -- Barelling recipes cause tech loops
+        if name == "empty-milk-barrel" then
+           -- We need to empty milk barrels to complete the pack since you don't create it directly
+        elseif string.match(name, "%a+%-barrel") then
             if self.configuration.verbose_logging then
                 log("Marking barreling recipe " .. name .. " as ignore_in_pypp")
             end
             recipe.ignore_in_pypp = true
-        end
-        if string.match(name, "empty%-%a+%-barrel") then
+        elseif string.match(name, "empty%-%a+%-barrel") then
             if self.configuration.verbose_logging then
                 log("Marking unbarreling recipe " .. name .. " as ignore_in_pypp")
             end
             recipe.ignore_in_pypp = true
-        end
-    end
-    -- Recycling recipes cause loops (and they never lead to new things anyway)
-    for name, recipe in pairs(data.raw["recipe"]) do
-        if recipe.category == "recycling" then
+         -- Recycling recipes cause loops (and they never lead to new things anyway)
+        elseif recipe.category == "recycling" then
             if self.configuration.verbose_logging then
                 log("Marking recycling recipe " .. name .. " as ignore_in_pypp")
             end
