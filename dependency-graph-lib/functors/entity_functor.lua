@@ -54,6 +54,10 @@ local entity_functor = object_node_functor:new(object_types.entity,
             end
         end
 
+        if (type(entity.energy_source) == "table" and entity.energy_source.type == "burner") or entity.burner then
+            requirement_node:add_new_object_dependent_requirement(entity_requirements.required_fuel_category, object, requirement_nodes, object.configuration)
+        end
+
         local fluid_boxes = entity.fluid_boxes or {}
         if entity.fluid_box then table.insert(fluid_boxes, entity.fluid_box) end
         if entity.output_fluid_box then table.insert(fluid_boxes, entity.output_fluid_box) end
@@ -126,6 +130,12 @@ local entity_functor = object_node_functor:new(object_types.entity,
         object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.initial_action, object_nodes)
         object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.final_action, object_nodes)
 
+        if type(entity.energy_source) == "table" and entity.energy_source.type == "burner" then
+            object_node_functor:add_fulfiller_for_object_requirement(object, entity.energy_source.fuel_categories, object_types.entity, entity_requirements.required_fuel_category, object_nodes)
+        elseif entity.burner then
+            object_node_functor:add_fulfiller_for_object_requirement(object, entity.burner.fuel_categories, object_types.entity, entity_requirements.required_fuel_category, object_nodes)
+        end
+
         -- Support for PyAL-style module requirements
         if entity.dependency_graph_lib_force_require_module_categories then
             object_node_functor:add_typed_requirement_to_object(object, entity.allowed_module_categories, requirement_types.module_category, requirement_nodes)
@@ -141,7 +151,7 @@ local entity_functor = object_node_functor:new(object_types.entity,
                     object_node_functor:add_independent_requirement_to_object(object, requirement_types.electricity, requirement_nodes)
                 end
             elseif type == "burner" then
-                object_node_functor:add_typed_requirement_to_object(object, energy_source.fuel_categories, requirement_types.fuel_category, requirement_nodes)
+                --pass
             elseif type == "heat" then
                 object_node_functor:add_typed_requirement_to_object(object, tostring(entity.energy_source.min_working_temperature or 15), requirement_types.heat, requirement_nodes)
             elseif type == "fluid" then
@@ -155,9 +165,7 @@ local entity_functor = object_node_functor:new(object_types.entity,
             end
         end
 
-        if entity.burner then
-            object_node_functor:add_typed_requirement_to_object(object, entity.burner.fuel_categories, requirement_types.fuel_category, requirement_nodes)
-        end
+
         object_node_functor:add_fulfiller_for_typed_requirement(object, entity.crafting_categories, requirement_types.recipe_category, requirement_nodes)
         object_node_functor:add_fulfiller_for_typed_requirement(object, entity.mining_categories, requirement_types.resource_category, requirement_nodes)
 

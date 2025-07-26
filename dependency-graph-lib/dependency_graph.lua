@@ -20,6 +20,7 @@ local planet_functor = require "dependency-graph-lib.functors.planet_functor"
 local recipe_functor = require "dependency-graph-lib.functors.recipe_functor"
 local technology_functor = require "dependency-graph-lib.functors.technology_functor"
 local tile_functor = require "dependency-graph-lib.functors.tile_functor"
+local fuel_category_functor = require "dependency-graph-lib.functors.fuel_category_functor"
 local victory_functor = require "dependency-graph-lib.functors.victory_functor"
 
 local entity_requirements = require "dependency-graph-lib.requirements.entity_requirements"
@@ -161,6 +162,7 @@ function dependency_graph:create_nodes()
     process_object_types(self.data_raw["planet"], planet_functor)
     process_object_types(self.data_raw["space-location"], planet_functor)
     process_object_types(self.data_raw["tile"], tile_functor)
+    process_object_types(self.data_raw["fuel-category"], fuel_category_functor)
 
     for item_type in pairs(defines.prototypes.item) do
         process_object_types(self.data_raw[item_type], item_functor)

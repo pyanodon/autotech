@@ -5,5 +5,6 @@ local entity_requirements = {
     required_fluid = "required_fluid",
     required_mining_fluid = "required_mining_fluid",
     required_burnable_fluid = "required_burnable_fluid",
+    required_fuel_category = "required_fuel_category"
 }
 return entity_requirements

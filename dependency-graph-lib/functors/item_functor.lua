@@ -14,7 +14,7 @@ local item_functor = object_node_functor:new(object_types.item,
     function(object, requirement_nodes, object_nodes)
         local item = object.object
         object_node_functor:add_fulfiller_for_object_requirement(object, item.place_result, object_types.entity, entity_requirements.instantiate, object_nodes)
-        object_node_functor:add_fulfiller_for_typed_requirement(object, item.fuel_category, requirement_types.fuel_category, requirement_nodes)
+        object_node_functor:add_fulfiller_for_object_requirement(object, item.fuel_category, object_types.entity, entity_requirements.required_fuel_category, object_nodes)
 
         object_node_functor:add_fulfiller_for_object_requirement(object, item.burnt_result, object_types.item, item_requirements.create, object_nodes)
         object_node_functor:add_fulfiller_for_object_requirement(object, item.spoil_result, object_types.item, item_requirements.create, object_nodes)
