@@ -149,7 +149,7 @@
 --             if verbose_logging then
 --                 log("Canonising the dependency for " .. node.printable_name .. " for " .. verb .. " to be on " .. self.printable_name .. " via " .. dependency_type)
 --             end
-    
+
 --             if node:has_no_more_dependencies() then
 --                 newly_independent_nodes[#newly_independent_nodes+1] = node
 --                 if verbose_logging then
@@ -158,7 +158,7 @@
 --             end
 --         end
 --     end
-    
+
 --     return newly_independent_nodes
 -- end
 

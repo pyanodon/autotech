@@ -1,4 +1,3 @@
-
 -- This is a test script for the dependency graph library for automated testing.
 -- It is not intended to be run in a normal mod environment.
 if mods["testmod"] and not mods["autotech"] then
@@ -9,4 +8,3 @@ if mods["testmod"] and not mods["autotech"] then
     graph:run()
     log("Finished test")
 end
-

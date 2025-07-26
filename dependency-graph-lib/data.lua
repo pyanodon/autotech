@@ -12,6 +12,5 @@ _G.dependency_graph_lib_custom_callbacks = {}
 function _G.dependency_graph_lib_register_custom_callback(fun)
     dependency_graph_lib_custom_callbacks[#dependency_graph_lib_custom_callbacks + 1] = fun
 end
-    
 
 apply_vanilla_rules(data.raw)

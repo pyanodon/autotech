@@ -108,7 +108,7 @@ function requirement_node:add_fulfiller(fulfiller)
     if not fulfiller then assert(fulfiller, serpent.block(self)) end
 
     local nodes_that_can_fulfil_this = self.nodes_that_can_fulfil_this
-    nodes_that_can_fulfil_this[#nodes_that_can_fulfil_this+1] = fulfiller
+    nodes_that_can_fulfil_this[#nodes_that_can_fulfil_this + 1] = fulfiller
     ---@diagnostic disable-next-line: invisible
     fulfiller:add_fulfiller(self)
 
@@ -121,7 +121,7 @@ end
 ---@param dependent ObjectNode
 function requirement_node:add_requiring_node(dependent)
     local nodes_that_require_this = self.nodes_that_require_this
-    nodes_that_require_this[#nodes_that_require_this+1] = dependent
+    nodes_that_require_this[#nodes_that_require_this + 1] = dependent
 end
 
 ---@param fulfiller ObjectNode
@@ -135,7 +135,7 @@ function requirement_node:try_add_canonical_fulfiller(fulfiller)
     for _, target in pairs(self.nodes_that_require_this) do
         local target_now_is_independent = target:on_fulfil_requirement(self)
         if target_now_is_independent then
-            result[#result+1] = target
+            result[#result + 1] = target
         end
     end
     return result

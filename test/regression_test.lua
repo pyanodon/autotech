@@ -12,15 +12,15 @@ local autotech_class = require "new_auto_tech"
 
 local start_time = os.time()
 local write = io.write
-log = function (...)
+log = function(...)
     write((os.time() - start_time) .. "s elapsed: ")
-    local n = select("#",...)
-    for i = 1,n do
-        local v = tostring(select(i,...))
+    local n = select("#", ...)
+    for i = 1, n do
+        local v = tostring(select(i, ...))
         write(v)
-        if i~=n then write'\t' end
+        if i ~= n then write "\t" end
     end
-    write'\n'
+    write "\n"
 end
 
 -- TODO: figure out the right file

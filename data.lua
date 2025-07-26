@@ -41,7 +41,7 @@ local debris_items = function()
 end
 
 local set_always_available_for_starting_items = function()
-    for _, item_type in pairs{created_items, respawn_items, ship_items, debris_items} do
+    for _, item_type in pairs {created_items, respawn_items, ship_items, debris_items} do
         for item_name in pairs(item_type()) do
             for item_type in pairs(defines.prototypes.item) do
                 local item = (data.raw[item_type] or {})[item_name]

@@ -127,7 +127,6 @@ end
 ---@param object_nodes ObjectNodeStorage
 ---@param optional_inner_name? string|nil
 function object_node_functor:add_fulfiller_for_object_requirement(fulfiller, nameOrTable, object_type, requirement, object_nodes, optional_inner_name)
-    
     -- This function aims to work with a lot of different formats:
     -- - nameOrTable is an item/entity/whatever directly
     -- - nameOrTable[optional_inner_name] is an item directly
@@ -161,14 +160,17 @@ function object_node_functor:add_fulfiller_for_object_requirement(fulfiller, nam
             actualWork(actual_node_name[optional_inner_name])
         end
     end
+
     function doCallOnObject()
         checkInnerName(nameOrTable)
     end
+
     function doCallOnTable()
         for _, actual_node_name in pairs(nameOrTable) do
             checkInnerName(actual_node_name)
         end
     end
+
     if type(nameOrTable) == "table" then
         if optional_inner_name ~= nil then
             -- have to distinguish between { item='fish', count=5 } and a table of such entries
@@ -297,7 +299,7 @@ function object_node_functor:add_fulfiller_to_triggerlike_object(fulfiller, trig
             parse_trigger_effect(effect)
         end
     end
-    
+
     parse_trigger_effect(triggerlike_possibility_table)
     if triggerlike_possibility_table.action_delivery then
         inner_function(triggerlike_possibility_table.action_delivery)
