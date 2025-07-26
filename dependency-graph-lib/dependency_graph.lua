@@ -100,8 +100,8 @@ function dependency_graph:run()
 end
 
 function dependency_graph:create_nodes()
-    self.start_node = object_node:new({name="start"}, object_node_descriptor:unique_node(object_types.start), self.object_nodes, self.configuration)
-    self.victory_node = object_node:new({name="victory"}, object_node_descriptor:unique_node(object_types.victory), self.object_nodes, self.configuration)
+    self.start_node = object_node:new({name = "start"}, object_node_descriptor:unique_node(object_types.start), self.object_nodes, self.configuration)
+    self.victory_node = object_node:new({name = "victory"}, object_node_descriptor:unique_node(object_types.victory), self.object_nodes, self.configuration)
     requirement_node:new_independent_requirement(requirement_types.electricity, self.requirement_nodes, self.configuration)
     requirement_node:new_independent_requirement(requirement_types.fluid_with_fuel_value, self.requirement_nodes, self.configuration)
     requirement_node:new_independent_requirement(requirement_types.space_platform, self.requirement_nodes, self.configuration)
@@ -197,7 +197,7 @@ function dependency_graph:create_nodes()
 end
 
 function dependency_graph:link_nodes()
-    self.object_nodes:for_all_nodes(function (object_type, object)
+    self.object_nodes:for_all_nodes(function(object_type, object)
         functor_map[object_type]:register_dependencies(object, self.requirement_nodes, self.object_nodes)
     end)
 end
@@ -292,6 +292,5 @@ end
 function dependency_graph:for_all_nodes_of_type(object_type, functor)
     self.object_nodes:for_all_nodes_of_type(object_type, functor)
 end
-
 
 return dependency_graph

@@ -68,7 +68,7 @@ end
 ---@param fulfilled RequirementNode
 function object_node:add_fulfiller(fulfilled)
     local this_can_fulfil = self.this_can_fulfil
-    this_can_fulfil[#this_can_fulfil+1] = fulfilled
+    this_can_fulfil[#this_can_fulfil + 1] = fulfilled
 end
 
 function object_node:has_no_more_unfulfilled_requirements()
@@ -91,7 +91,7 @@ function object_node:on_node_becomes_independent()
     for _, requirement in pairs(self.this_can_fulfil) do
         local newly_independent_nodes = requirement:try_add_canonical_fulfiller(self)
         for _, newly_independent_node in pairs(newly_independent_nodes) do
-            result[#result+1] = newly_independent_node
+            result[#result + 1] = newly_independent_node
         end
     end
     return result

@@ -41,7 +41,7 @@ function technology_node:new(object_node, technology_nodes)
     result.nodes_that_require_this = {}
     result.not_part_of_canonical_path = false
     result.tech_order_index = 0
-    result.reachable_nodes = { [result] = true }
+    result.reachable_nodes = {[result] = true}
     result.reduced_fulfilled_requirements = {}
 
     technology_nodes:add_technology_node(result)
@@ -139,7 +139,7 @@ function technology_node:link_technologies(technology_nodes, a_mandatory_require
                     self.requirements[canonical_fulfiller_node] = tracker_node
                     self.nr_requirements = self.nr_requirements + 1
                     canonical_fulfiller_node.nodes_that_require_this[self.printable_name] = self
-    
+
                     if verbose_logging then
                         log("Found a tech dependency: " .. canonical_fulfiller.printable_name)
                     end
@@ -184,7 +184,7 @@ function technology_node:on_node_becomes_independent(tech_order_index)
     for _, target in pairs(self.nodes_that_require_this) do
         local target_now_is_independent = target:on_fulfil_requirement(self)
         if target_now_is_independent then
-            result[#result+1] = target
+            result[#result + 1] = target
         end
     end
     return result

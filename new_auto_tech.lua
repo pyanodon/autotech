@@ -79,7 +79,7 @@ function auto_tech:vanilla_massaging()
     for name, recipe in pairs(data.raw["recipe"]) do
         -- Barelling recipes cause tech loops
         if name == "empty-milk-barrel" then
-           -- We need to empty milk barrels to complete the pack since you don't create it directly
+            -- We need to empty milk barrels to complete the pack since you don't create it directly
         elseif string.match(name, "%a+%-barrel") then
             if self.configuration.verbose_logging then
                 log("Marking barreling recipe " .. name .. " as ignore_in_pypp")
@@ -90,7 +90,7 @@ function auto_tech:vanilla_massaging()
                 log("Marking unbarreling recipe " .. name .. " as ignore_in_pypp")
             end
             recipe.ignore_in_pypp = true
-         -- Recycling recipes cause loops (and they never lead to new things anyway)
+            -- Recycling recipes cause loops (and they never lead to new things anyway)
         elseif recipe.category == "recycling" then
             if self.configuration.verbose_logging then
                 log("Marking recycling recipe " .. name .. " as ignore_in_pypp")
@@ -103,7 +103,7 @@ end
 function auto_tech:determine_mandatory_dependencies()
     local verbose_logging = self.configuration.verbose_logging
     local is_done = false
-    self.dependency_graph:for_all_nodes(function (_, object)
+    self.dependency_graph:for_all_nodes(function(_, object)
         self.a_mandatory_requirement_for_b:add_node(object)
     end)
     local round_number = 1
@@ -113,7 +113,7 @@ function auto_tech:determine_mandatory_dependencies()
         end
         is_done = true
         round_number = round_number + 1
-        self.dependency_graph:for_all_nodes(function (_, object)
+        self.dependency_graph:for_all_nodes(function(_, object)
             if verbose_logging then
                 log("Considering " .. object.printable_name)
             end
@@ -170,7 +170,7 @@ function auto_tech:determine_mandatory_dependencies()
     end
     if verbose_logging then
         log("Finished " .. round_number .. " rounds")
-        self.dependency_graph:for_all_nodes(function (_, object)
+        self.dependency_graph:for_all_nodes(function(_, object)
             log("Summarizing " .. object.printable_name)
             for _, requirement in pairs(object.requirements) do
                 local message = nil
@@ -186,14 +186,14 @@ function auto_tech:determine_mandatory_dependencies()
 end
 
 function auto_tech:construct_tech_graph_nodes()
-    self.dependency_graph:for_all_nodes_of_type(object_types.technology, function (object_node)
+    self.dependency_graph:for_all_nodes_of_type(object_types.technology, function(object_node)
         technology_node:new(object_node, self.technology_nodes)
     end)
     technology_node:new(self.dependency_graph.victory_node, self.technology_nodes)
 end
 
 function auto_tech:construct_tech_graph_edges()
-    self.technology_nodes:for_all_nodes(function (tech_node)
+    self.technology_nodes:for_all_nodes(function(tech_node)
         tech_node:link_technologies(self.technology_nodes, self.a_mandatory_requirement_for_b)
     end)
 end
@@ -202,7 +202,7 @@ function auto_tech:linearise_tech_graph()
     local verbose_logging = self.configuration.verbose_logging
     local tech_order_index = 1
     local q = deque.new()
-    self.technology_nodes:for_all_nodes(function (technology_node)
+    self.technology_nodes:for_all_nodes(function(technology_node)
         if technology_node:has_no_more_unfulfilled_requirements() then
             q:push_right(technology_node)
             if verbose_logging then
@@ -232,7 +232,7 @@ function auto_tech:linearise_tech_graph()
         end
     end
 
-    self.technology_nodes:for_all_nodes(function (technology_node)
+    self.technology_nodes:for_all_nodes(function(technology_node)
         if not technology_node:has_no_more_unfulfilled_requirements() then
             log("Node " .. technology_node.printable_name .. " still has unresolved dependencies: " .. technology_node:print_dependencies())
         end
@@ -257,7 +257,7 @@ function auto_tech:verify_victory_reachable_tech_graph()
             end
             seen_nodes[current_node] = true
         end
-        
+
         log("Tech loop detected:")
         local loop_start = current_node
         local firstIteration = true
@@ -288,7 +288,7 @@ end
 
 function auto_tech:calculate_transitive_reduction()
     local verbose_logging = self.configuration.verbose_logging
-    table.sort(self.technology_nodes_array, function (a, b)
+    table.sort(self.technology_nodes_array, function(a, b)
         return a.tech_order_index < b.tech_order_index
     end)
     -- Goralčíková & Koubek (1979)
@@ -298,9 +298,9 @@ function auto_tech:calculate_transitive_reduction()
         end
         local targets_in_order = {}
         for w, _ in pairs(v.fulfilled_requirements) do
-           table.insert(targets_in_order, w)
+            table.insert(targets_in_order, w)
         end
-        table.sort(targets_in_order, function (a, b)
+        table.sort(targets_in_order, function(a, b)
             return a.tech_order_index > b.tech_order_index
         end)
         for _, w in ipairs(targets_in_order) do
@@ -319,7 +319,7 @@ end
 
 function auto_tech:adapt_tech_links()
     local verbose_logging = self.configuration.verbose_logging
-    self.technology_nodes:for_all_nodes(function (technology_node)
+    self.technology_nodes:for_all_nodes(function(technology_node)
         local factorio_tech = technology_node.object_node.object
         local tech_name = factorio_tech.name
         local existing_dependencies = {}
