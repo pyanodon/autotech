@@ -8,6 +8,7 @@ local object_types = {
     start = "start",
     technology = "technology",
     tile = "tile",
+    fuel_category = "fuel_category",
     victory = "victory",
 }
 return object_types

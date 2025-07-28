@@ -7,6 +7,7 @@ local item_requirements = require "dependency-graph-lib.requirements.item_requir
 local entity_requirements = require "dependency-graph-lib.requirements.entity_requirements"
 local fluid_requirements = require "dependency-graph-lib.requirements.fluid_requirements"
 local technology_requirements = require "dependency-graph-lib.requirements.technology_requirements"
+local fuel_category_requirements = require "dependency-graph-lib.requirements.fuel_category_requirements"
 local common_type_handlers = require "dependency-graph-lib.functors.common_type_handlers"
 
 local is_elevated_rail = {
@@ -52,6 +53,10 @@ local entity_functor = object_node_functor:new(object_types.entity,
             if entity.energy_source.type == "heat" then
                 requirement_node:create_or_get_typed_requirement(tostring(entity.energy_source.min_working_temperature or 15), requirement_types.heat, requirement_nodes, object.configuration)
             end
+        end
+
+        if (type(entity.energy_source) == "table" and entity.energy_source.type == "burner") or entity.burner then
+            requirement_node:add_new_object_dependent_requirement(entity_requirements.required_fuel_category, object, requirement_nodes, object.configuration)
         end
 
         local fluid_boxes = entity.fluid_boxes or {}
@@ -141,7 +146,7 @@ local entity_functor = object_node_functor:new(object_types.entity,
                     object_node_functor:add_independent_requirement_to_object(object, requirement_types.electricity, requirement_nodes)
                 end
             elseif type == "burner" then
-                object_node_functor:add_typed_requirement_to_object(object, energy_source.fuel_categories, requirement_types.fuel_category, requirement_nodes)
+                object_node_functor:reverse_add_fulfiller_for_object_requirement(object, entity_requirements.required_fuel_category, energy_source.fuel_categories, object_types.fuel_category, object_nodes)
             elseif type == "heat" then
                 object_node_functor:add_typed_requirement_to_object(object, tostring(entity.energy_source.min_working_temperature or 15), requirement_types.heat, requirement_nodes)
             elseif type == "fluid" then
@@ -156,8 +161,9 @@ local entity_functor = object_node_functor:new(object_types.entity,
         end
 
         if entity.burner then
-            object_node_functor:add_typed_requirement_to_object(object, entity.burner.fuel_categories, requirement_types.fuel_category, requirement_nodes)
+            object_node_functor:reverse_add_fulfiller_for_object_requirement(object, entity_requirements.required_fuel_category, entity.burner.fuel_categories, object_types.fuel_category, object_nodes)
         end
+
         object_node_functor:add_fulfiller_for_typed_requirement(object, entity.crafting_categories, requirement_types.recipe_category, requirement_nodes)
         object_node_functor:add_fulfiller_for_typed_requirement(object, entity.mining_categories, requirement_types.resource_category, requirement_nodes)
 

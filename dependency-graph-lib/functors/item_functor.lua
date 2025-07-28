@@ -3,6 +3,7 @@ local object_node_functor = require "dependency-graph-lib.object_nodes.object_no
 local requirement_node = require "dependency-graph-lib.requirement_nodes.requirement_node"
 local requirement_types = require "dependency-graph-lib.requirement_nodes.requirement_types"
 local item_requirements = require "dependency-graph-lib.requirements.item_requirements"
+local fuel_category_requirements = require "dependency-graph-lib.requirements.fuel_category_requirements"
 local entity_requirements = require "dependency-graph-lib.requirements.entity_requirements"
 local tile_requirements = require "dependency-graph-lib.requirements.tile_requirements"
 local common_type_handlers = require "dependency-graph-lib.functors.common_type_handlers"
@@ -14,7 +15,7 @@ local item_functor = object_node_functor:new(object_types.item,
     function(object, requirement_nodes, object_nodes)
         local item = object.object
         object_node_functor:add_fulfiller_for_object_requirement(object, item.place_result, object_types.entity, entity_requirements.instantiate, object_nodes)
-        object_node_functor:add_fulfiller_for_typed_requirement(object, item.fuel_category, requirement_types.fuel_category, requirement_nodes)
+        object_node_functor:add_fulfiller_for_object_requirement(object, item.fuel_category, object_types.fuel_category, fuel_category_requirements.burns, object_nodes)
 
         object_node_functor:add_fulfiller_for_object_requirement(object, item.burnt_result, object_types.item, item_requirements.create, object_nodes)
         object_node_functor:add_fulfiller_for_object_requirement(object, item.spoil_result, object_types.item, item_requirements.create, object_nodes)
