@@ -1,5 +1,3 @@
---- @module "definitions"
-
 local deque = require "utils.deque"
 
 local object_node = require "dependency-graph-lib.object_nodes.object_node"
