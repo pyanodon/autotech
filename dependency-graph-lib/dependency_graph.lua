@@ -37,6 +37,7 @@ functor_map[object_types.planet] = planet_functor
 functor_map[object_types.recipe] = recipe_functor
 functor_map[object_types.technology] = technology_functor
 functor_map[object_types.tile] = tile_functor
+functor_map[object_types.fuel_category] = fuel_category_functor
 functor_map[object_types.victory] = victory_functor
 
 --- @class dependency_graph
@@ -152,7 +153,6 @@ function dependency_graph:create_nodes()
 
     process_requirement_type(self.data_raw["ammo-category"], requirement_types.ammo_category)
     process_requirement_type(self.data_raw["equipment-grid"], requirement_types.equipment_grid)
-    process_requirement_type(self.data_raw["fuel-category"], requirement_types.fuel_category)
     process_requirement_type(self.data_raw["recipe-category"], requirement_types.recipe_category)
     process_requirement_type(self.data_raw["resource-category"], requirement_types.resource_category)
 

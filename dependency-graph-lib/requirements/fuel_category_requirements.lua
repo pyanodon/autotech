@@ -1,5 +1,5 @@
 ---@enum FuelCategoryRequirements
 local fuel_category_requirements = {
-    consumed_by = "consumed_by"
+    burns = "burns"
 }
 return fuel_category_requirements
