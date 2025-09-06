@@ -8,7 +8,7 @@
 
 require "dependency-graph-lib/test/regression_test"
 local json = require "dependency-graph-lib/utils/json"
-local autotech_class = require "new_auto_tech"
+local autotech_class = require "autotech"
 
 local start_time = os.time()
 local write = io.write
