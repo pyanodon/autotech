@@ -135,9 +135,9 @@ function dependency_graph:create_nodes()
         local node = object_node:new(object, object_node_descriptor:new(object.name, functor.object_type), self.object_nodes, self.configuration)
         functor.register_requirements_func(node, self.requirement_nodes)
 
-        if object.autotech_startup then
+        if object.autotech_always_available then
             table.insert(self.startup_nodes, node)
-            object.autotech_startup = nil -- clean up
+            object.autotech_always_available = nil -- clean up
         end
     end
 

@@ -146,10 +146,9 @@ function object_node_functor:add_fulfiller_for_object_requirement(fulfiller, nam
             error("Cannot find requirement object " .. name .. " " .. object_type .. ".")
         end
         local requirement_node = target_node.requirements[requirement]
-        if requirement_node == nil then
-            error("Cannot find requirement \"" .. requirement .. "\" on " .. name .. " " .. object_type .. ".")
+        if requirement_node then
+            requirement_node:add_fulfiller(fulfiller)
         end
-        requirement_node:add_fulfiller(fulfiller)
     end
     function checkInnerName(actual_node_name)
         if optional_inner_name == nil then

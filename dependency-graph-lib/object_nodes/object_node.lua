@@ -49,6 +49,10 @@ end
 
 ---@param requirement RequirementNode
 function object_node:add_requirement(requirement)
+    if self.object.autotech_ignore then
+        return
+    end
+
     local requirement_name = requirement.descriptor.name
     local requirements = self.requirements
     if requirements[requirement_name] ~= nil then

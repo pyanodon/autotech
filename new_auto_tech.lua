@@ -39,28 +39,6 @@ function auto_tech:run_phase(phase_function, phase_name)
 end
 
 function auto_tech:run()
-    -- TODO (outdated):
-    -- armor and gun stuff, military entities
-    -- ignore soot results
-    -- miner with fluidbox
-    -- resources on map
-    -- fluid boxes on crafting entities
-    -- modules on crafting entities
-    -- robots and roboports
-    -- heat
-    -- labs
-    -- temperatures for fluids, boilers
-    -- techs enabled at start
-
-    -- nodes to finish:
-    -- tech
-
-    -- nodes finished:
-    -- recipe
-    -- item
-    -- fluid
-    -- resource
-
     self:run_phase(self.vanilla_massaging, "vanilla massaging")
     self.dependency_graph:run()
     self:run_phase(function()
@@ -82,20 +60,20 @@ function auto_tech:vanilla_massaging()
             -- We need to empty milk barrels to complete the pack since you don't create it directly
         elseif string.match(name, "%a+%-barrel") then
             if self.configuration.verbose_logging then
-                log("Marking barreling recipe " .. name .. " as ignore_in_pypp")
+                log("Marking barreling recipe " .. name .. " as autotech_ignore")
             end
-            recipe.ignore_in_pypp = true
+            recipe.autotech_ignore = true
         elseif string.match(name, "empty%-%a+%-barrel") then
             if self.configuration.verbose_logging then
-                log("Marking unbarreling recipe " .. name .. " as ignore_in_pypp")
+                log("Marking unbarreling recipe " .. name .. " as autotech_ignore")
             end
-            recipe.ignore_in_pypp = true
+            recipe.autotech_ignore = true
             -- Recycling recipes cause loops (and they never lead to new things anyway)
         elseif recipe.category == "recycling" then
             if self.configuration.verbose_logging then
-                log("Marking recycling recipe " .. name .. " as ignore_in_pypp")
+                log("Marking recycling recipe " .. name .. " as autotech_ignore")
             end
-            recipe.ignore_in_pypp = true
+            recipe.autotech_ignore = true
         end
     end
 end
@@ -350,7 +328,25 @@ function auto_tech:adapt_tech_links()
 end
 
 function auto_tech:set_tech_costs()
+    local function cost_rounding()
 
+    end
+
+    local verbose_logging = self.configuration.verbose_logging
+    self.technology_nodes:for_all_nodes(function(technology_node)
+        local factorio_tech = technology_node.object_node.object
+        if factorio_tech.research_trigger then
+            goto continue
+        end
+        if factorio_tech.unit and factorio_tech.unit.count_formula then
+            goto continue
+        end
+
+        factorio_tech.unit = factorio_tech.unit or {time = 60}
+        factorio_tech.unit.count = 300
+        log(factorio_tech.name .. serpent.block(factorio_tech.prerequisites) .. serpent.block(factorio_tech.unit))
+        ::continue::
+    end)
 end
 
 return auto_tech

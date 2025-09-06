@@ -1,7 +1,7 @@
 local apply_vanilla_rules = require "apply_vanilla_rules"
 
 ---@class nil
----@field autotech_startup boolean
+---@field autotech_always_available boolean
 
 ---@type fun(graph: dependency_graph)[]
 _G.dependency_graph_lib_custom_callbacks = {}
