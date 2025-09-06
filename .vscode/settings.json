@@ -11,7 +11,13 @@
     "Lua.completion.autoRequire": false,
     "Lua.diagnostics.globals": [
         "create_object_class",
-        "__Profiler"
+        "__Profiler",
+        "require",
+        "os",
+        "serpent",
+        "io",
+        "mods",
+        "settings"
     ],
     "factorio.versions": [
         {

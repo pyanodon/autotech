@@ -9,15 +9,15 @@ local technology_dependency_tracking_node = require "technology_nodes.technology
 ---@field printable_name string
 ---@field configuration Configuration
 ---@field requirements table<TechnologyNode, TechnologyDependencyTrackingNode>
----@field nr_requirements int
+---@field nr_requirements number
 ---@field fulfilled_requirements table<TechnologyNode, boolean>
----@field nr_fulfilled_requirements int
+---@field nr_fulfilled_requirements number
 ---@field nodes_that_require_this table<string, TechnologyNode>
 ---@field not_part_of_canonical_path boolean
 ---These are filled in later:
 ---@field unfulfilled_requirements table<TechnologyNode, TechnologyDependencyTrackingNode>
----@field nr_unfulfilled_requirements int
----@field tech_order_index int
+---@field nr_unfulfilled_requirements number
+---@field tech_order_index number
 ---@field reachable_nodes table<TechnologyNode, boolean>
 ---@field reduced_fulfilled_requirements table<TechnologyNode, boolean>
 local technology_node = {}
@@ -177,7 +177,7 @@ function technology_node:on_fulfil_requirement(requirement)
     return self:has_no_more_unfulfilled_requirements()
 end
 
----@param tech_order_index int
+---@param tech_order_index number
 function technology_node:on_node_becomes_independent(tech_order_index)
     self.tech_order_index = tech_order_index
     local result = {}

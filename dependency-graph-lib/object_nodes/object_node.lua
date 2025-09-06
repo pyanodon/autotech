@@ -9,9 +9,9 @@ local concat_requirements = require "dependency-graph-lib.utils.concat_requireme
 ---@field printable_name string
 ---@field configuration Configuration
 ---@field requirements table<string, RequirementNode>
----@field nr_requirements int
+---@field nr_requirements number
 ---@field fulfilled_requirements table<RequirementNode, boolean>
----@field nr_fulfilled_requirements int
+---@field nr_fulfilled_requirements number
 ---@field this_can_fulfil RequirementNode[]
 ---@field technology_unlocks ObjectNode[]
 local object_node = {}

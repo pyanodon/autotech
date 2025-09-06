@@ -94,7 +94,6 @@ end
 ---@param requirement_nodes RequirementNodeStorage
 ---@param configuration Configuration
 ---@param optional_inner_index? any
----@return RequirementNode
 function requirement_node:add_new_object_dependent_requirement_table(table, requirement_prefix, source_object, requirement_nodes, configuration, optional_inner_index)
     for _, entry in pairs(table or {}) do
         local innerEntry = optional_inner_index and entry[optional_inner_index] or entry
