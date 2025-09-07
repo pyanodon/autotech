@@ -7,11 +7,10 @@ local recipe_requirements = require "dependency-graph-lib.requirements.recipe_re
 local entity_requirements = require "dependency-graph-lib.requirements.entity_requirements"
 local common_type_handlers = require "dependency-graph-lib.functors.common_type_handlers"
 
-local function ingredientList(ingredients)
-    local nr_ingredients = ingredients and #ingredients or 0
+local function ingredient_list(ingredients)
     local result = {}
-    for i = 1, nr_ingredients do
-        result[i] = i
+    for _, ingredient in pairs(ingredients or {}) do
+        result[#result + 1] = ingredient.name
     end
     return result
 end
@@ -22,7 +21,7 @@ local recipe_functor = object_node_functor:new(object_types.recipe,
 
         requirement_node:add_new_object_dependent_requirement(recipe_requirements.enable, object, requirement_nodes, object.configuration)
 
-        requirement_node:add_new_object_dependent_requirement_table(ingredientList(recipe.ingredients), recipe_requirements.ingredient, object, requirement_nodes, object.configuration)
+        requirement_node:add_new_object_dependent_requirement_table(ingredient_list(recipe.ingredients), recipe_requirements.ingredient, object, requirement_nodes, object.configuration)
 
         if feature_flags.space_travel and recipe.surface_conditions and #recipe.surface_conditions > 0 then
             requirement_node:add_new_object_dependent_requirement(entity_requirements.required_surface_conditions, object, requirement_nodes, object.configuration)
@@ -39,7 +38,7 @@ local recipe_functor = object_node_functor:new(object_types.recipe,
 
         local i = 1
         for _, ingredient in pairs(recipe.ingredients or {}) do
-            object_node_functor:add_productlike_fulfiller(object.requirements[recipe_requirements.ingredient .. ": " .. i], ingredient, object_nodes)
+            object_node_functor:add_productlike_fulfiller(object.requirements[recipe_requirements.ingredient .. ": " .. ingredient.name], ingredient, object_nodes)
             i = i + 1
         end
 
