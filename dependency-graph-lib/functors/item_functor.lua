@@ -6,6 +6,7 @@ local item_requirements = require "dependency-graph-lib.requirements.item_requir
 local fuel_category_requirements = require "dependency-graph-lib.requirements.fuel_category_requirements"
 local entity_requirements = require "dependency-graph-lib.requirements.entity_requirements"
 local tile_requirements = require "dependency-graph-lib.requirements.tile_requirements"
+local planet_requirements = require "dependency-graph-lib.requirements.planet_requirements"
 local common_type_handlers = require "dependency-graph-lib.functors.common_type_handlers"
 
 local item_functor = object_node_functor:new(object_types.item,
@@ -34,6 +35,7 @@ local item_functor = object_node_functor:new(object_types.item,
         elseif item.type == "capsule" then
             common_type_handlers:handle_attack_parameters(item.capsule_action.attack_parameters, object_node_functor, object, object_nodes)
         elseif item.type == "space-platform-starter-pack" then
+            object_node_functor:add_fulfiller_for_object_requirement(object, item.surface, object_types.planet, planet_requirements.visit, object_nodes)
             for _, item in pairs(item.initial_items or {}) do
                 object_node_functor:add_fulfiller_for_object_requirement(object, item.name, object_types.item, item_requirements.create, object_nodes)
             end

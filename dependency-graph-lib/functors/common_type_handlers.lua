@@ -46,12 +46,7 @@ function common_type_handlers:handle_surface_conditions(surface_conditions, obje
                 end
             end
 
-            if space_location_type == "surface" then
-                -- TODO: teach it about space platform surface.
-                object_node_functor:reverse_add_fulfiller_for_object_requirement(object, entity_requirements.required_surface_conditions, "nauvis", object_types.planet, object_nodes)
-            else
-                object_node_functor:reverse_add_fulfiller_for_object_requirement(object, entity_requirements.required_surface_conditions, planet.name, object_types.planet, object_nodes)
-            end
+            object_node_functor:reverse_add_fulfiller_for_object_requirement(object, entity_requirements.required_surface_conditions, planet.name, object_types.planet, object_nodes)
             ::next_planet::
         end
     end

@@ -137,6 +137,7 @@ function dependency_graph:create_nodes()
     process_object_types(self.data_raw["technology"], technology_functor)
     process_object_types(self.data_raw["planet"], planet_functor)
     process_object_types(self.data_raw["space-location"], planet_functor)
+    process_object_types(self.data_raw["surface"], planet_functor)
     process_object_types(self.data_raw["tile"], tile_functor)
     process_object_types(self.data_raw["fuel-category"], fuel_category_functor)
 
