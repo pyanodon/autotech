@@ -210,23 +210,20 @@ local entity_functor = object_node_functor:new(object_types.entity,
 
         if entity.type == "lab" then
             local inputs = entity.inputs
-            local input_lookup = {}
-            for _, input in pairs(inputs) do
-                input_lookup[input] = true
-            end
+            local input_lookup = table.invert(entity.inputs or error())
             for _, technology_node in pairs(object_nodes.nodes[object_types.technology]) do
                 local technology = technology_node.object
-                if technology.unit ~= nil then
-                    local matches = true
-                    for _, ingredientPair in pairs(technology.unit.ingredients) do
-                        if input_lookup[ingredientPair[1]] ~= true then
-                            matches = false
-                            break
+                if technology.unit and technology.unit.ingredients then
+                    for _, ingredient in pairs(technology.unit.ingredients) do
+                        if type(ingredient[1]) ~= "string" then
+                            error("Invalid technology unit " .. serpent.block(technology.unit) .. " for technology " .. technology.name)
+                        end
+                        if not input_lookup[ingredient[1]] then
+                            goto cant_research_this_tech_in_this_lab
                         end
                     end
-                    if matches then
-                        technology_node.requirements[technology_requirements.researched_with]:add_fulfiller(object)
-                    end
+                    technology_node.requirements[technology_requirements.researched_with]:add_fulfiller(object)
+                    ::cant_research_this_tech_in_this_lab::
                 end
             end
         end
