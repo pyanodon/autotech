@@ -354,8 +354,6 @@ function auto_tech:set_tech_costs()
     self.technology_nodes:for_all_nodes(function(technology_node)
         local factorio_tech = technology_node.object_node.object
         if factorio_tech.research_trigger then return end
-        if factorio_tech.unit and factorio_tech.unit.count_formula then return end
-
         factorio_tech.unit = factorio_tech.unit or {}
         local depth_percent = (technology_node.depth / max_depth)
         factorio_tech.unit.count = start + (victory - start) * (depth_percent ^ exponent)
@@ -367,6 +365,13 @@ function auto_tech:set_tech_costs()
         local final_multiplier = self.configuration.tech_cost_additional_multipliers[factorio_tech.name]
         if final_multiplier then
             factorio_tech.unit.count = factorio_tech.unit.count * final_multiplier
+        end
+
+        if factorio_tech.max_level == "infinite" and factorio_tech.unit.count_formula then
+            factorio_tech.unit.count_formula = "(" .. factorio_tech.unit.count .. ") + " .. factorio_tech.unit.count_formula
+            factorio_tech.unit.count = nil
+        else
+            factorio_tech.unit.count_formula = nil
         end
     end)
 end
