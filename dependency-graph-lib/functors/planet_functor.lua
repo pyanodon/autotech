@@ -9,9 +9,6 @@ local entity_requirements = require "dependency-graph-lib.requirements.entity_re
 
 local planet_functor = object_node_functor:new(object_types.planet,
     function(object, requirement_nodes)
-        local planet = object.object
-        ---@cast planet PlanetDefinition
-
         requirement_node:add_new_object_dependent_requirement(planet_requirements.visit, object, requirement_nodes, object.configuration)
     end,
     function(object, requirement_nodes, object_nodes)

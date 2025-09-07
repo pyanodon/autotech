@@ -7,7 +7,6 @@ local item_requirements = require "dependency-graph-lib.requirements.item_requir
 local entity_requirements = require "dependency-graph-lib.requirements.entity_requirements"
 local fluid_requirements = require "dependency-graph-lib.requirements.fluid_requirements"
 local technology_requirements = require "dependency-graph-lib.requirements.technology_requirements"
-local fuel_category_requirements = require "dependency-graph-lib.requirements.fuel_category_requirements"
 local common_type_handlers = require "dependency-graph-lib.functors.common_type_handlers"
 
 local is_elevated_rail = {
@@ -68,6 +67,10 @@ local entity_functor = object_node_functor:new(object_types.entity,
                     requirement_node:add_new_object_dependent_requirement(entity_requirements.required_fluid .. "_" .. fluid_box.filter, object, requirement_nodes, object.configuration)
                 end
             end
+        end
+
+        if feature_flags.space_travel and entity.surface_conditions and #entity.surface_conditions > 0 then
+            requirement_node:add_new_object_dependent_requirement(entity_requirements.required_surface_conditions, object, requirement_nodes, object.configuration)
         end
     end,
     function(object, requirement_nodes, object_nodes)
@@ -311,5 +314,6 @@ local entity_functor = object_node_functor:new(object_types.entity,
         end
 
         common_type_handlers:handle_attack_parameters(entity.attack_parameters, object_node_functor, object, object_nodes)
+        common_type_handlers:handle_surface_conditions(entity.surface_conditions, object_node_functor, object, object_nodes)
     end)
 return entity_functor
