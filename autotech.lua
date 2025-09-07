@@ -363,6 +363,11 @@ function auto_tech:set_tech_costs()
             log("Technology " .. factorio_tech.name .. " has a depth of " .. technology_node.depth .. ". Calculated science pack cost is " .. factorio_tech.unit.count)
         end
         factorio_tech.unit.count = math.max(cost_rounding(factorio_tech.unit.count), 1)
+
+        local final_multiplier = self.configuration.tech_cost_additional_multipliers[factorio_tech.name]
+        if final_multiplier then
+            factorio_tech.unit.count = factorio_tech.unit.count * final_multiplier
+        end
     end)
 end
 
