@@ -16,6 +16,16 @@ data:extend {{
         tech_cost_additional_multipliers = {
             pyrrhic = 10,
         },
+        -- if a technology has this science pack, it will require this much time per research cycle.
+        tech_cost_time_requirement = {
+            ["automation-science-pack"] = 20,
+            ["logistic-science-pack"] = 30,
+            ["military-science-pack"] = 30,
+            ["chemical-science-pack"] = 30,
+            ["production-science-pack"] = 60,
+            ["utility-science-pack"] = 60,
+            ["space-science-pack"] = 60,
+        },
         victory_tech = "space-science-pack",
         verbose_logging = settings.startup["autotech-verbose-logging"].value == true
     }

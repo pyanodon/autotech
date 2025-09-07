@@ -374,6 +374,13 @@ function auto_tech:set_tech_unit()
         else
             factorio_tech.unit.count_formula = nil
         end
+
+        local time = 1
+        for _, science_pack in pairs(factorio_tech.unit.ingredients or {}) do
+            science_pack = science_pack[1]
+            time = math.max(time, self.configuration.tech_cost_time_requirement[science_pack] or 1)
+        end
+        factorio_tech.unit.time = time
     end)
 end
 
