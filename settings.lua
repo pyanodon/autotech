@@ -4,7 +4,7 @@ data:extend {
         name = "autotech-verbose-logging",
         setting_type = "startup",
         default_value = false,
-        hidden = true,
+        hidden = false,
         order = "e",
     },
 }
