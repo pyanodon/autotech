@@ -48,8 +48,9 @@ function auto_tech:run()
         self:run_phase(self.linearise_tech_graph, "tech graph linearisation")
         self:run_phase(self.verify_victory_reachable_tech_graph, "verify victory reachable in tech graph")
         self:run_phase(self.calculate_transitive_reduction, "transitive reduction calculation")
-        self:run_phase(self.adapt_tech_links, "adapting tech links")
-        self:run_phase(self.set_tech_costs, "tech cost setting")
+        self:run_phase(self.set_tech_prerequisites, "tech prerequisites setting")
+        self:run_phase(self.set_tech_unit, "tech cost setting")
+        self:run_phase(self.set_tech_order, "tech order setting")
     end, "autotech")
 end
 
@@ -295,7 +296,7 @@ function auto_tech:calculate_transitive_reduction()
     end
 end
 
-function auto_tech:adapt_tech_links()
+function auto_tech:set_tech_prerequisites()
     local verbose_logging = self.configuration.verbose_logging
     self.technology_nodes:for_all_nodes(function(technology_node)
         local factorio_tech = technology_node.object_node.object
@@ -327,7 +328,7 @@ function auto_tech:adapt_tech_links()
     end)
 end
 
-function auto_tech:set_tech_costs()
+function auto_tech:set_tech_unit()
     local verbose_logging = self.configuration.verbose_logging
     local start = self.configuration.tech_cost_starting_cost
     local victory = self.configuration.tech_cost_victory_cost
@@ -373,6 +374,14 @@ function auto_tech:set_tech_costs()
         else
             factorio_tech.unit.count_formula = nil
         end
+    end)
+end
+
+function auto_tech:set_tech_order()
+    self.technology_nodes:for_all_nodes(function(technology_node)
+        local factorio_tech = technology_node.object_node.object
+        local order_index = string.format("%06d", technology_node.tech_order_index)
+        factorio_tech.order = "autotech-[" .. order_index .. "]-[" .. factorio_tech.name .. "]"
     end)
 end
 
