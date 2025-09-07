@@ -180,17 +180,14 @@ end
 
 ---@param tech_order_index number
 function technology_node:on_node_becomes_independent(tech_order_index)
-    self.depth = self.depth or 1
+    self.depth = self.depth or 0
     self.tech_order_index = tech_order_index
     local result = {}
     for _, target in pairs(self.nodes_that_require_this) do
         local target_now_is_independent = target:on_fulfil_requirement(self)
         if target_now_is_independent then
-            if target.depth then
-                target.depth = math.min(target.depth, self.depth + 1)
-            else
-                target.depth = self.depth + 1
-            end
+            assert(not target.depth)
+            target.depth = self.depth + 1
             result[#result + 1] = target
         end
     end
