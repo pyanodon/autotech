@@ -328,24 +328,41 @@ function auto_tech:adapt_tech_links()
 end
 
 function auto_tech:set_tech_costs()
-    local function cost_rounding()
+    local verbose_logging = self.configuration.verbose_logging
+    local start = self.configuration.tech_cost_starting_cost
+    local victory = self.configuration.tech_cost_victory_cost
+    local exponent = self.configuration.tech_cost_exponent
+    local victory_node = self.technology_nodes:find_technology_node(self.dependency_graph.victory_node)
+    local max_depth = victory_node.depth - 1
 
+    local function cost_rounding(cost)
+        local targets = self.configuration.tech_cost_rounding_targets
+        local exp = 1
+
+        while cost >= (targets[#targets] + targets[1] * 10) / 2 do
+            cost = cost / 10
+            exp = exp * 10
+        end
+        for i, n in pairs(targets) do
+            if i == #targets or cost < (n + targets[i + 1]) / 2 then
+                return math.floor(n * exp)
+            end
+        end
+        error()
     end
 
-    local verbose_logging = self.configuration.verbose_logging
     self.technology_nodes:for_all_nodes(function(technology_node)
         local factorio_tech = technology_node.object_node.object
-        if factorio_tech.research_trigger then
-            goto continue
-        end
-        if factorio_tech.unit and factorio_tech.unit.count_formula then
-            goto continue
-        end
+        if factorio_tech.research_trigger then return end
+        if factorio_tech.unit and factorio_tech.unit.count_formula then return end
 
-        factorio_tech.unit = factorio_tech.unit or {time = 60}
-        factorio_tech.unit.count = 300
-        log(factorio_tech.name .. serpent.block(factorio_tech.prerequisites) .. serpent.block(factorio_tech.unit))
-        ::continue::
+        factorio_tech.unit = factorio_tech.unit or {}
+        local depth_percent = (technology_node.depth / max_depth)
+        factorio_tech.unit.count = start + (victory - start) * (depth_percent ^ exponent)
+        if verbose_logging then
+            log("Technology " .. factorio_tech.name .. " has a depth of " .. technology_node.depth .. ". Calculated science pack cost is " .. factorio_tech.unit.count)
+        end
+        factorio_tech.unit.count = math.max(cost_rounding(factorio_tech.unit.count), 1)
     end)
 end
 

@@ -1,6 +1,6 @@
 --- @meta
 
---- @alias Configuration { verbose_logging: boolean }
+--- @alias Configuration { verbose_logging: boolean, tech_cost_starting_cost: number, tech_cost_victory_cost: number, tech_cost_exponent: number, tech_cost_rounding_targets: number[], tech_cost_additional_multipliers: table<string, number>, victory_tech: string }
 
 --- @alias RequirementsRegistryFunction fun(object: ObjectNode, requirement_nodes: RequirementNodeStorage)
 --- @alias DependencyRegistryFunction fun(object: ObjectNode, requirement_nodes: RequirementNodeStorage, object_nodes: ObjectNodeStorage)

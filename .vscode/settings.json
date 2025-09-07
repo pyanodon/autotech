@@ -17,7 +17,8 @@
         "serpent",
         "io",
         "mods",
-        "settings"
+        "settings",
+        "math"
     ],
     "factorio.versions": [
         {

@@ -20,6 +20,7 @@ local technology_dependency_tracking_node = require "technology_nodes.technology
 ---@field tech_order_index number
 ---@field reachable_nodes table<TechnologyNode, boolean>
 ---@field reduced_fulfilled_requirements table<TechnologyNode, boolean>
+---@field depth number?
 local technology_node = {}
 technology_node.__index = technology_node
 
@@ -179,11 +180,17 @@ end
 
 ---@param tech_order_index number
 function technology_node:on_node_becomes_independent(tech_order_index)
+    self.depth = self.depth or 1
     self.tech_order_index = tech_order_index
     local result = {}
     for _, target in pairs(self.nodes_that_require_this) do
         local target_now_is_independent = target:on_fulfil_requirement(self)
         if target_now_is_independent then
+            if target.depth then
+                target.depth = math.min(target.depth, self.depth + 1)
+            else
+                target.depth = self.depth + 1
+            end
             result[#result + 1] = target
         end
     end

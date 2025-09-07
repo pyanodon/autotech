@@ -68,28 +68,6 @@ function dependency_graph:run_phase(phase_function, phase_name)
 end
 
 function dependency_graph:run()
-    -- TODO (outdated):
-    -- armor and gun stuff, military entities
-    -- ignore soot results
-    -- miner with fluidbox
-    -- resources on map
-    -- fluid boxes on crafting entities
-    -- modules on crafting entities
-    -- robots and roboports
-    -- heat
-    -- labs
-    -- temperatures for fluids, boilers
-    -- techs enabled at start
-
-    -- nodes to finish:
-    -- tech
-
-    -- nodes finished:
-    -- recipe
-    -- item
-    -- fluid
-    -- resource
-
     self:run_phase(function()
         self:run_phase(self.create_nodes, "recipe graph node creation")
         self:run_phase(self.link_nodes, "recipe graph link creation")
@@ -214,16 +192,9 @@ function dependency_graph:run_custom_mod_dependencies()
         end
     end
 
-    if mods.pycoalprocessing then
-        local pyrrhic_victory_node = self.object_nodes:find_object_node(object_node_descriptor:new("pyrrhic", object_types.technology))
-        victory_functor:add_fulfiller_for_independent_requirement(pyrrhic_victory_node, requirement_types.victory, self.requirement_nodes)
-    elseif mods["space-age"] then
-        local promethium_science_pack_node = self.object_nodes:find_object_node(object_node_descriptor:new("promethium-science-pack", object_types.item))
-        victory_functor:add_fulfiller_for_independent_requirement(promethium_science_pack_node, requirement_types.victory, self.requirement_nodes)
-    else
-        local satellite_node = self.object_nodes:find_object_node(object_node_descriptor:new("satellite", object_types.item))
-        victory_functor:add_fulfiller_for_independent_requirement(satellite_node, requirement_types.victory, self.requirement_nodes)
-    end
+    -- victory tech
+    local victory_node = self.object_nodes:find_object_node(object_node_descriptor:new(self.configuration.victory_tech, object_types.technology))
+    victory_functor:add_fulfiller_for_independent_requirement(victory_node, requirement_types.victory, self.requirement_nodes)
 
     if self.configuration.skip_custom_callbacks then
         for _, customFun in pairs(_G.dependency_graph_lib_custom_callbacks) do
