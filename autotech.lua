@@ -57,8 +57,8 @@ end
 function auto_tech:vanilla_massaging()
     for name, recipe in pairs(data.raw["recipe"]) do
         -- Barelling recipes cause tech loops
-        if name == "empty-milk-barrel" then
-            -- We need to empty milk barrels to complete the pack since you don't create it directly
+        if recipe.autotech_always_available then
+            -- Pass
         elseif string.match(name, "%a+%-barrel") then
             if self.configuration.verbose_logging then
                 log("Marking barreling recipe " .. name .. " as autotech_ignore")
@@ -336,7 +336,12 @@ function auto_tech:set_tech_unit()
     local victory_node = self.technology_nodes:find_technology_node(self.dependency_graph.victory_node)
     local max_depth = victory_node.depth - 1
 
+    if max_depth <= 0 then
+        error("victory technology has a depth of " .. max_depth .. "\n" .. serpent.block(victory_node))
+    end
+
     local function cost_rounding(cost)
+        assert(cost ~= math.huge)
         local targets = self.configuration.tech_cost_rounding_targets
         local exp = 1
 
@@ -358,6 +363,10 @@ function auto_tech:set_tech_unit()
         factorio_tech.unit = factorio_tech.unit or {}
         local depth_percent = (technology_node.depth / max_depth)
         factorio_tech.unit.count = start + (victory - start) * (depth_percent ^ exponent)
+
+        if factorio_tech.unit.count == math.huge then
+            error(depth_percent .. "\n" .. serpent.block(factorio_tech) .. serpent.block(self.configuration))
+        end
         if verbose_logging then
             log("Technology " .. factorio_tech.name .. " has a depth of " .. technology_node.depth .. ". Calculated science pack cost is " .. factorio_tech.unit.count)
         end
