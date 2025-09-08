@@ -55,6 +55,17 @@ function auto_tech:run()
 end
 
 function auto_tech:vanilla_massaging()
+    for _, always_available_entity_type in pairs {
+        "entity-ghost",
+        "tile-ghost",
+        "item-entity",
+        "item-request-proxy",
+    } do
+        for _, entity in pairs(data.raw[always_available_entity_type] or error(always_available_entity_type)) do
+            entity.autotech_always_available = true
+        end
+    end
+
     for _, shortcut in pairs(data.raw.shortcut) do
         local item_name = shortcut.item_to_spawn
         if shortcut.action == "spawn-item" and item_name then
