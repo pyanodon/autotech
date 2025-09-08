@@ -37,6 +37,10 @@ local planet_functor = object_node_functor:new(object_types.planet,
             end
         end
 
+        if planet.type == "surface" and data.raw.tile["empty-space"] then
+            object_node_functor:add_fulfiller_for_object_requirement(object, "empty-space", object_types.tile, tile_requirements.place, object_nodes)
+        end
+
         local mgs = planet.map_gen_settings
         if not mgs then return end
 
