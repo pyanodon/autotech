@@ -277,7 +277,7 @@ function auto_tech:verify_victory_reachable_tech_graph()
             if tracking_node.object == previous_node.object_node then
                 table.insert(messages, "This technology has requirements to be researched, namely:")
             else
-                table.insert(messages, "This technology unlocks " .. tracking_node.object.printable_name)
+                table.insert(messages, "This technology unlocks " .. (tracking_node.object.printable_name or tracking_node.object.name))
             end
             for i = #messages, 1, -1 do
                 log(messages[i])
