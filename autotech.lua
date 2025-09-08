@@ -287,6 +287,12 @@ function auto_tech:verify_victory_reachable_tech_graph()
 
         error("Error: no partial linearisation of the tech graph with the canonical choices allows victory to be reached. Details have been printed to the log.")
     end
+
+    self.technology_nodes:for_all_nodes(function(technology_node)
+        if not technology_node:has_no_more_unfulfilled_requirements() then
+            error("Node " .. technology_node.printable_name .. " still has unresolved dependencies: " .. technology_node:print_dependencies())
+        end
+    end)
 end
 
 function auto_tech:calculate_transitive_reduction()
