@@ -111,14 +111,6 @@ function technology_node:link_technologies(technology_nodes, a_mandatory_require
                 end
                 goto continue
             end
-            for _, fulfiller in pairs(requirement.nodes_that_can_fulfil_this) do
-                if a_mandatory_requirement_for_b:reaches(fulfiller, object_node) then
-                    if verbose_logging then
-                        log("Requirement " .. requirement.printable_name .. " skipped, fulfiller " .. fulfiller.printable_name .. " is a required dependency of the tech.")
-                    end
-                    goto continue
-                end
-            end
 
             ---@type ObjectNode
             local canonical_fulfiller = requirement.canonical_fulfiller
