@@ -29,6 +29,7 @@ function auto_tech.create(configuration)
     result.technology_nodes = technology_node_storage:new()
     result.technology_nodes_array = {}
     result.dependency_graph = dependency_graph_lib.create(data.raw, configuration)
+    result.starting_techs = {}
     return result
 end
 
@@ -51,6 +52,7 @@ function auto_tech:run()
         self:run_phase(self.set_tech_prerequisites, "tech prerequisites setting")
         self:run_phase(self.set_tech_unit, "tech cost setting")
         self:run_phase(self.set_tech_order, "tech order setting")
+        self:run_phase(self.set_science_packs, "science packs setting")
     end, "autotech")
 end
 
@@ -211,6 +213,7 @@ function auto_tech:linearise_tech_graph()
             if verbose_logging then
                 log("Technology " .. technology_node.printable_name .. " starts with no dependencies.")
             end
+            self.starting_techs[technology_node] = true
         end
     end)
 
@@ -428,6 +431,57 @@ function auto_tech:set_tech_order()
         local factorio_tech = technology_node.object_node.object
         local order_index = string.format("%06d", technology_node.tech_order_index)
         factorio_tech.order = "autotech-[" .. order_index .. "]-[" .. factorio_tech.name .. "]"
+    end)
+end
+
+function auto_tech:set_science_packs()
+    local function add_existing_science_packs_to_set(science_packs, technology_node)
+        local factorio_tech = technology_node.object_node.object
+        if not factorio_tech.unit or not factorio_tech.unit.ingredients then return end
+        for _, ingredient in pairs(factorio_tech.unit.ingredients) do
+            science_packs[ingredient[1]] = true
+        end
+    end
+
+    local q = deque.new()
+    for starting_tech in pairs(self.starting_techs) do
+        starting_tech.science_packs = {}
+        add_existing_science_packs_to_set(starting_tech.science_packs, starting_tech)
+        q:push_right(starting_tech)
+    end
+
+    while not q:is_empty() do
+        ---@type TechnologyNode
+        local technology_node = q:pop_left()
+        local science_pack_unlocked_by_this_tech = data.raw.tool[technology_node.object_node.object.name]
+        for _, node in pairs(technology_node.nodes_that_require_this) do
+            local new_node_to_check = not node.science_packs
+            node.science_packs = node.science_packs or {}
+            local original_size = table_size(node.science_packs)
+            add_existing_science_packs_to_set(node.science_packs, node)
+            for ingredient in pairs(technology_node.science_packs) do
+                node.science_packs[ingredient] = true
+            end
+            if science_pack_unlocked_by_this_tech then
+                node.science_packs[science_pack_unlocked_by_this_tech.name] = true
+            end
+            local has_grown = new_node_to_check or (table_size(technology_node.science_packs) > original_size)
+            if has_grown then
+                q:push_right(node)
+            end
+        end
+    end
+
+    self.technology_nodes:for_all_nodes(function(technology_node)
+        local factorio_tech = technology_node.object_node.object
+        if factorio_tech.research_trigger then return end
+        factorio_tech.unit = factorio_tech.unit or {}
+        factorio_tech.unit.ingredients = factorio_tech.unit.ingredients or {}
+        local ingredients = {}
+        for science_pack in pairs(technology_node.science_packs or {}) do
+            ingredients[#ingredients+1] = {science_pack, 1}
+        end
+        factorio_tech.unit.ingredients = ingredients
     end)
 end
 
