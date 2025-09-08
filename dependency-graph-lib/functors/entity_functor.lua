@@ -117,7 +117,6 @@ local entity_functor = object_node_functor:new(object_types.entity,
         object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.created_effect, object_nodes)
         object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.regular_trigger_effect, object_nodes)
         object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.ended_in_water_trigger_effect, object_nodes)
-        object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.ended_on_ground_trigger_effect, object_nodes)
         object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.drive_over_tie_trigger, object_nodes)
         object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.drive_over_elevated_tie_trigger, object_nodes)
         object_node_functor:add_fulfiller_to_triggerlike_object(object, entity.leg_hit_the_ground_trigger, object_nodes)

@@ -289,6 +289,9 @@ function object_node_functor:add_fulfiller_to_triggerlike_object(fulfiller, trig
         elseif effect.type == "set-tile" then
             local descriptor = object_node_descriptor:new(effect.tile_name, object_types.tile)
             object_nodes:find_object_node(descriptor).requirements[tile_requirements.place]:add_fulfiller(fulfiller)
+        elseif effect.type == "create-particle" then
+            local particle = data.raw["optimized-particle"][effect.particle_name]
+            object_node_functor:add_fulfiller_to_triggerlike_object(fulfiller, particle.ended_on_ground_trigger_effect, object_nodes)
         end
     end
 
