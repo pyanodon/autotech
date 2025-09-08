@@ -10,7 +10,7 @@
   "dependencies": [
     "base >= 2.0.0",
     "(?) maraxsis",
-    "(?) pyalternativeenergy"
+    "(?) pypostprocessing"
   ],
   "package": {
     "ignore": [],
