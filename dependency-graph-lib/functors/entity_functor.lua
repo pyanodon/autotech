@@ -209,8 +209,10 @@ local entity_functor = object_node_functor:new(object_types.entity,
         end
 
         if entity.type == "lab" then
-            local inputs = entity.inputs
-            local input_lookup = table.invert(entity.inputs or error())
+            local input_lookup = {}
+            for _, input in pairs(entity.inputs or error()) do
+                input_lookup[input] = true
+            end
             for _, technology_node in pairs(object_nodes.nodes[object_types.technology]) do
                 local technology = technology_node.object
                 if technology.unit and technology.unit.ingredients then
