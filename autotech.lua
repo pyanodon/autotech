@@ -55,6 +55,19 @@ function auto_tech:run()
 end
 
 function auto_tech:vanilla_massaging()
+    for _, shortcut in pairs(data.raw.shortcut) do
+        local item_name = shortcut.item_to_spawn
+        if shortcut.action == "spawn-item" and item_name then
+            for item_type in pairs(defines.prototypes.item) do
+                local item = (data.raw[item_type] or {})[item_name]
+                if item and item.autotech_always_available == nil then
+                    item.autotech_always_available = true
+                    break
+                end
+            end
+        end
+    end
+
     for name, recipe in pairs(data.raw["recipe"]) do
         -- Barelling recipes cause tech loops
         if recipe.autotech_always_available then
