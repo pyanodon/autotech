@@ -292,6 +292,9 @@ function object_node_functor:add_fulfiller_to_triggerlike_object(fulfiller, trig
         elseif effect.type == "create-particle" then
             local particle = data.raw["optimized-particle"][effect.particle_name]
             object_node_functor:add_fulfiller_to_triggerlike_object(fulfiller, particle.ended_on_ground_trigger_effect, object_nodes)
+        elseif effect.type == "delayed" then
+            local trigger = data.raw["delayed-active-trigger"][effect.delayed_trigger]
+            object_node_functor:add_fulfiller_to_triggerlike_object(fulfiller, trigger.action, object_nodes)
         end
     end
 
