@@ -83,7 +83,9 @@ function auto_tech:vanilla_massaging()
 
     for name, recipe in pairs(data.raw["recipe"]) do
         -- Barelling recipes cause tech loops
-        if recipe.autotech_always_available then
+        if recipe.name == "barrel-milk" or recipe.name == "empty-barrel-milk" or recipe.name == "empty-milk-barrel" then
+            -- Hardcoded exception for pyalienlife. TODO: find a smarter way to do this.
+        elseif recipe.autotech_always_available then
             -- Pass
         elseif string.match(name, "%a+%-barrel") then
             if self.configuration.verbose_logging then
