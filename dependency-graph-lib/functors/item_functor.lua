@@ -69,11 +69,3 @@ local item_functor = object_node_functor:new(object_types.item,
         end
     end)
 return item_functor
-
---     self:add_disjunctive_dependent(nodes, node_types.item_node, item.rocket_launch_products, "rocket launch product", item_verbs.create, "name")
---     if item.rocket_launch_products then
---         self:add_dependency(nodes, node_types.entity_node, 1, "requires any cargo-landing-pad prototype", entity_verbs.requires_cargo_landing_pad)
---     end
-
-
---     --placed_as_equipment_result optional 	:: EquipmentID

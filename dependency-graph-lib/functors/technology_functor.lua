@@ -12,7 +12,6 @@ local technology_functor = object_node_functor:new(object_types.technology,
     function(object, requirement_nodes)
         local tech = object.object
 
-        --requirement_node:add_new_object_dependent_requirement(technology_requirements.enable, object, requirement_nodes, object.configuration)
         requirement_node:add_new_object_dependent_requirement_table(tech.prerequisites, technology_requirements.prerequisite, object, requirement_nodes, object.configuration)
 
         if tech.unit then
