@@ -12,7 +12,15 @@ local technology_functor = object_node_functor:new(object_types.technology,
     function(object, requirement_nodes)
         local tech = object.object
 
-        requirement_node:add_new_object_dependent_requirement_table(tech.prerequisites, technology_requirements.prerequisite, object, requirement_nodes, object.configuration)
+        local prerequisites_deduped = {}
+        for _, prerequisite in pairs(tech.prerequisites or {}) do
+            prerequisites_deduped[prerequisite] = true
+        end
+        local prerequisites = {}
+        for prerequisite in pairs(prerequisites_deduped) do
+            prerequisites[#prerequisites+1] = prerequisite
+        end
+        requirement_node:add_new_object_dependent_requirement_table(prerequisites, technology_requirements.prerequisite, object, requirement_nodes, object.configuration)
 
         if tech.unit then
             requirement_node:add_new_object_dependent_requirement(technology_requirements.researched_with, object, requirement_nodes, object.configuration)
