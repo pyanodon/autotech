@@ -359,7 +359,8 @@ Set-Content -Path $PyPPConfigPath -Value $PyPPConfig -Encoding UTF8 -NoNewline
 $FactorioArgs = "--mod-directory $FactorioModsPath --benchmark notafile" #Stand in for "load then exit"
 $BaseMods = @(
     "base",
-    "pypostprocessing"
+    "pypostprocessing",
+    "autotech"
 )
 $GraphicModsLookup = @{
     pyalienlife = @("pyalienlifegraphics", "pyalienlifegraphics2", "pyalienlifegraphics3")
@@ -371,6 +372,7 @@ $GraphicModsLookup = @{
     ; pyrawores = @("pyraworesgraphics")
     ; pyaliens = @("pyaliensgraphics")
     ; pystellarexpedition = @("pystellarexpeditiongraphics")
+    ; pyindustry = @("pyindustrygraphics")
 }
 
 foreach ($CacheFileModList in $CacheFileModLists){
