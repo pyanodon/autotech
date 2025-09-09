@@ -13,9 +13,7 @@ data:extend {{
         -- Should be >=10 & <100
         tech_cost_rounding_targets = {10, 11, 12, 13, 14, 15, 16, 17.5, 20, 22.5, 25, 27.5, 30, 33, 36, 40, 45, 50, 55, 60, 65, 70, 75, 80, 90},
         -- List of technologies that have their final cost multiplied by X after all of autotech's changes
-        tech_cost_additional_multipliers = {
-            pyrrhic = 10,
-        },
+        tech_cost_additional_multipliers = {},
         -- if a technology has this science pack, it will require this much time per research cycle.
         tech_cost_time_requirement = {
             ["automation-science-pack"] = 20,
@@ -26,15 +24,55 @@ data:extend {{
             ["utility-science-pack"] = 60,
             ["space-science-pack"] = 60,
         },
+        tech_cost_science_pack_tiers = {
+            ["automation-science-pack"] = 1,
+            ["logistic-science-pack"] = 2,
+            ["military-science-pack"] = 2,
+            ["chemical-science-pack"] = 3,
+            ["production-science-pack"] = 4,
+            ["utility-science-pack"] = 4,
+            ["space-science-pack"] = 5,
+        },
+        tech_cost_science_packs_per_tier = {1},
         victory_tech = "space-science-pack",
         verbose_logging = settings.startup["autotech-verbose-logging"].value == true
     }
 }}
 
-if mods.pycoalprocessing then
-    data.raw["mod-data"]["autotech-config"].data.victory_tech = "pyrrhic"
-elseif mods["space-age"] then
-    data.raw["mod-data"]["autotech-config"].data.victory_tech = "promethium-science-pack"
+if mods["space-age"] then
+    local config = data.raw["mod-data"]["autotech-config"].data
+
+    config.tech_cost_time_requirement["automation-science-pack"] = 20
+    config.tech_cost_time_requirement["logistic-science-pack"] = 30
+    config.tech_cost_time_requirement["military-science-pack"] = 30
+    config.tech_cost_time_requirement["chemical-science-pack"] = 30
+    config.tech_cost_time_requirement["production-science-pack"] = 60
+    config.tech_cost_time_requirement["utility-science-pack"] = 60
+    config.tech_cost_time_requirement["space-science-pack"] = 60
+    config.tech_cost_time_requirement["metalurgic-science-pack"] = 60
+    config.tech_cost_time_requirement["electromagnetic-science-pack"] = 60
+    config.tech_cost_time_requirement["agricultural-science-pack"] = 60
+    config.tech_cost_time_requirement["cyrogenic-science-pack"] = 60
+    config.tech_cost_time_requirement["promethium-science-pack"] = 120
+
+    config.tech_cost_science_pack_tiers["automation-science-pack"] = 1
+    config.tech_cost_science_pack_tiers["logistic-science-pack"] = 2
+    config.tech_cost_science_pack_tiers["military-science-pack"] = 2
+    config.tech_cost_science_pack_tiers["chemical-science-pack"] = 3
+    config.tech_cost_science_pack_tiers["production-science-pack"] = 4
+    config.tech_cost_science_pack_tiers["utility-science-pack"] = 4
+    config.tech_cost_science_pack_tiers["space-science-pack"] = 5
+    config.tech_cost_science_pack_tiers["metalurgic-science-pack"] = 6
+    config.tech_cost_science_pack_tiers["electromagnetic-science-pack"] = 6
+    config.tech_cost_science_pack_tiers["agricultural-science-pack"] = 6
+    config.tech_cost_science_pack_tiers["cyrogenic-science-pack"] = 7
+    config.tech_cost_science_pack_tiers["promethium-science-pack"] = 8
+
+    config.tech_cost_science_packs_per_tier = {1}
+    config.tech_cost_starting_cost = 20
+    config.tech_cost_victory_cost = 2000
+    config.tech_cost_exponent = 3
+    config.victory_tech = "promethium-science-pack"
 end
 
 -- By default autotech assumes nauvis as the starting planet.
