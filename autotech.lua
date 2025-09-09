@@ -1,8 +1,9 @@
 --- @module "definitions"
 
-local deque = require "dependency-graph-lib/utils/deque"
-local object_types = require "dependency-graph-lib/object_nodes/object_types"
-local reachability = require "utils/reachability"
+local deque = require "dependency-graph-lib.utils.deque"
+local object_types = require "dependency-graph-lib.object_nodes.object_types"
+local reachability = require "utils.reachability"
+local lzw = require "utils.lempel-ziv-welch"
 
 local technology_node = require "technology_nodes.technology_node"
 local technology_node_storage = require "technology_nodes.technology_node_storage"
@@ -43,17 +44,19 @@ function auto_tech:run()
     self:run_phase(self.vanilla_massaging, "vanilla massaging")
     self.dependency_graph:run()
     self:run_phase(function()
-        self:run_phase(self.determine_mandatory_dependencies, "determine mandatory dependencies")
-        self:run_phase(self.construct_tech_graph_nodes, "constructing tech graph nodes")
-        self:run_phase(self.construct_tech_graph_edges, "constructing tech graph edges")
-        self:run_phase(self.linearise_tech_graph, "tech graph linearisation")
-        self:run_phase(self.verify_victory_reachable_tech_graph, "verify victory reachable in tech graph")
-        self:run_phase(self.calculate_transitive_reduction, "transitive reduction calculation")
-        self:run_phase(self.set_tech_prerequisites, "tech prerequisites setting")
-        self:run_phase(self.set_tech_unit, "tech cost setting")
-        self:run_phase(self.set_tech_order, "tech order setting")
-        self:run_phase(self.set_science_packs, "science packs setting")
+        self:run_phase(self.determine_mandatory_dependencies, "determine mandatory dependencies (1/11)")
+        self:run_phase(self.construct_tech_graph_nodes, "constructing tech graph nodes (2/11)")
+        self:run_phase(self.construct_tech_graph_edges, "constructing tech graph edges (3/11)")
+        self:run_phase(self.linearise_tech_graph, "tech graph linearisation (4/11)")
+        self:run_phase(self.verify_victory_reachable_tech_graph, "verify victory reachable in tech graph (5/11)")
+        self:run_phase(self.calculate_transitive_reduction, "transitive reduction calculation (6/11)")
+        self:run_phase(self.set_tech_prerequisites, "tech prerequisites setting (7/11)")
+        self:run_phase(self.set_tech_unit, "tech cost setting (8/11)")
+        self:run_phase(self.set_tech_order, "tech order setting (9/11)")
+        self:run_phase(self.set_science_packs, "science packs setting (10/11)")
+        self:run_phase(self.serialize_cache_file, "cache file output (11/11)")
     end, "autotech")
+    error("Autotech completed successfully.")
 end
 
 function auto_tech:vanilla_massaging()
@@ -360,6 +363,7 @@ function auto_tech:set_tech_prerequisites()
                 end
             end
         end
+        self:write_to_cache_file(technology_node, "prerequisites", factorio_tech.prerequisites)
     end)
 end
 
@@ -415,8 +419,10 @@ function auto_tech:set_tech_unit()
         if factorio_tech.max_level == "infinite" and factorio_tech.unit.count_formula then
             factorio_tech.unit.count_formula = "(" .. factorio_tech.unit.count .. ") + " .. factorio_tech.unit.count_formula
             factorio_tech.unit.count = nil
+            self:write_to_cache_file(technology_node, "count_formula", factorio_tech.unit.count_formula)
         else
             factorio_tech.unit.count_formula = nil
+            self:write_to_cache_file(technology_node, "count", factorio_tech.unit.count)
         end
 
         local time = 1
@@ -425,6 +431,7 @@ function auto_tech:set_tech_unit()
             time = math.max(time, self.configuration.tech_cost_time_requirement[science_pack] or 1)
         end
         factorio_tech.unit.time = time
+        self:write_to_cache_file(technology_node, "time", time)
     end)
 end
 
@@ -433,6 +440,7 @@ function auto_tech:set_tech_order()
         local factorio_tech = technology_node.object_node.object
         local order_index = string.format("%06d", technology_node.tech_order_index)
         factorio_tech.order = "autotech-[" .. order_index .. "]-[" .. factorio_tech.name .. "]"
+        self:write_to_cache_file(technology_node, "order", factorio_tech.order)
     end)
 end
 
@@ -493,7 +501,30 @@ function auto_tech:set_science_packs()
             ingredients[#ingredients + 1] = {science_pack, num_packs_required}
         end
         factorio_tech.unit.ingredients = ingredients
+        self:write_to_cache_file(technology_node, "ingredients", ingredients)
     end)
+end
+
+function auto_tech:write_to_cache_file(technology_node, key, data)
+    local factorio_tech = technology_node.object_node.object
+    self.cache_file = self.cache_file or {}
+    self.cache_file[factorio_tech.name] = self.cache_file[factorio_tech.name] or {}
+
+    assert(not self.cache_file[factorio_tech.name][key], key)
+    self.cache_file[factorio_tech.name][key] = data
+end
+
+function auto_tech:serialize_cache_file()
+    local function add_newlines(str, num_chars_per_line)
+        local result, _ = str:gsub(("."):rep(num_chars_per_line), "%1\n")
+        return result
+    end
+
+    assert(self.cache_file)
+    local result = serpent.line(self.cache_file, {compact = true})
+    result = add_newlines(lzw.lzw_compress(result), 100)
+    -- add sentinels so that the cache file can be automatically extracted in PyPP-Regen-New.ps1
+    log("<BEGINPYPP>\n" .. result .. "\n<ENDPYPP>")
 end
 
 return auto_tech
