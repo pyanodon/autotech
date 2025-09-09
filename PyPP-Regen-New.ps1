@@ -334,7 +334,9 @@ function Extract-PyCacheContent{
         $StartPos += $StartToken.Length
         $SubsectionLength = $EndPos - $StartPos
         $Content = $LogFile.Substring($StartPos, $SubsectionLength)
-        return $Content -replace "([^`r])`n", "`$1`r`n" -replace "^`n", "`r`n" #enforce CR LF
+        $Content = $Content -replace "([^`r])`n", "`$1`r`n" -replace "^`n", "`r`n" #enforce CR LF
+        $Content = "return [[`n" + $Content.Trim() + "`n]]`n"
+        return $Content
     }else{
         return $null
     }
