@@ -479,9 +479,18 @@ function auto_tech:set_science_packs()
         if factorio_tech.research_trigger then return end
         factorio_tech.unit = factorio_tech.unit or {}
         factorio_tech.unit.ingredients = factorio_tech.unit.ingredients or {}
+        local tech_level = 1
+        for science_pack in pairs(technology_node.science_packs or {}) do
+            local level = self.configuration.tech_cost_science_pack_tiers[science_pack]
+            tech_level = math.max(level, tech_level)
+        end
         local ingredients = {}
         for science_pack in pairs(technology_node.science_packs or {}) do
-            ingredients[#ingredients+1] = {science_pack, 1}
+            local pack_level = tech_level - self.configuration.tech_cost_science_pack_tiers[science_pack] + 1
+            pack_level = math.min(#self.configuration.tech_cost_science_packs_per_tier, math.max(1, pack_level))
+            local num_packs_required = self.configuration.tech_cost_science_packs_per_tier[pack_level]
+            assert(num_packs_required)
+            ingredients[#ingredients + 1] = {science_pack, num_packs_required}
         end
         factorio_tech.unit.ingredients = ingredients
     end)
