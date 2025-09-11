@@ -99,12 +99,7 @@ function object_node_functor:reverse_add_fulfiller_for_object_requirement(requir
         local node = requirer.requirements[requirement]
         local descriptor = object_node_descriptor:new(fulfiller_name, fulfiller_type)
         local fulfiller = object_nodes:find_object_node(descriptor, node)
-        if fulfiller ~= nil then
-            node:add_fulfiller(fulfiller)
-        else
-            -- Could be downgraded to a log maybe
-            error("Object " .. descriptor.name .. " could not be found so cannot fulfill requirement " .. node.printable_name)
-        end
+        node:add_fulfiller(fulfiller)
     end
 end
 
@@ -142,9 +137,6 @@ function object_node_functor:add_fulfiller_for_object_requirement(fulfiller, nam
         if not name then error(serpent.block(nameOrTable)) end
         local descriptor = object_node_descriptor:new(name, object_type)
         local target_node = object_nodes:find_object_node(descriptor)
-        if target_node == nil then
-            error("Cannot find requirement object " .. name .. " " .. object_type .. ".")
-        end
         local requirement_node = target_node.requirements[requirement]
         if requirement_node == nil then
             if target_node.object.autotech_ignore then
