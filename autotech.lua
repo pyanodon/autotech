@@ -269,13 +269,13 @@ function auto_tech:verify_victory_reachable_tech_graph()
             seen_nodes[current_node] = true
         end
 
-        log("Tech loop detected:")
+        local loop_message = "Tech loop detected:"
         local loop_start = current_node
         local firstIteration = true
         while loop_start ~= current_node or firstIteration do
             firstIteration = false
             local previous_node = current_node
-            log("The technology " .. current_node.printable_name .. " has the following requirement chain to the next technology:")
+            loop_message = loop_message .. "\nThe technology " .. current_node.printable_name .. " has the following requirement chain to the next technology:"
             current_node, tracking_node = current_node:get_any_unfulfilled_requirement()
             local messages = {}
             while tracking_node.previous ~= nil do
@@ -288,12 +288,12 @@ function auto_tech:verify_victory_reachable_tech_graph()
                 table.insert(messages, "This technology unlocks " .. (tracking_node.object.printable_name or tracking_node.object.name))
             end
             for i = #messages, 1, -1 do
-                log(messages[i])
+                loop_message = loop_message .. "\n" .. messages[i]
             end
         end
-        log("And we're back to node " .. loop_start.printable_name)
+        loop_message = loop_message .. "\nAnd we're back to node " .. loop_start.printable_name
 
-        error("Error: no partial linearisation of the tech graph with the canonical choices allows victory to be reached. Details have been printed to the log.")
+        error("Error: no partial linearisation of the tech graph with the canonical choices allows victory to be reached.\n" .. loop_message)
     end
 
     self.technology_nodes:for_all_nodes(function(technology_node)
