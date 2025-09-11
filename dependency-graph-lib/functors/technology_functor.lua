@@ -42,7 +42,7 @@ local technology_functor = object_node_functor:new(object_types.technology,
             if object.configuration.verbose_logging then
                 log("Add technology unlock " .. descriptor.printable_name .. " to tech " .. object.printable_name)
             end
-            object.technology_unlocks[#object.technology_unlocks] = item_to_give
+            object.technology_unlocks[#object.technology_unlocks + 1] = item_to_give
         end
 
         for _, modifier in pairs(tech.effects or {}) do
