@@ -118,23 +118,23 @@ function object_node_functor:reverse_add_fulfiller_for_object_requirement_table(
 end
 
 ---@param fulfiller ObjectNode
----@param nameOrTable any
+---@param name_or_table any
 ---@param object_type ObjectType
 ---@param requirement any
 ---@param object_nodes ObjectNodeStorage
 ---@param optional_inner_name? string|nil
-function object_node_functor:add_fulfiller_for_object_requirement(fulfiller, nameOrTable, object_type, requirement, object_nodes, optional_inner_name)
+function object_node_functor:add_fulfiller_for_object_requirement(fulfiller, name_or_table, object_type, requirement, object_nodes, optional_inner_name)
     -- This function aims to work with a lot of different formats:
     -- - nameOrTable is an item/entity/whatever directly
     -- - nameOrTable[optional_inner_name] is an item directly
     -- - nameOrTable is a table of items
     -- - nameOrTable is a table of objects, and object[optional_inner_name] is an item
 
-    if nameOrTable == nil then
+    if name_or_table == nil then
         return
     end
-    local function actualWork(name)
-        if not name then error(serpent.block(nameOrTable)) end
+    local function actual_work(name)
+        if not name then error(serpent.block(name_or_table)) end
         local descriptor = object_node_descriptor:new(name, object_type)
         local target_node = object_nodes:find_object_node(descriptor)
         local requirement_node = target_node.requirements[requirement]
@@ -146,41 +146,41 @@ function object_node_functor:add_fulfiller_for_object_requirement(fulfiller, nam
         end
         requirement_node:add_fulfiller(fulfiller)
     end
-    function checkInnerName(actual_node_name)
+    function check_inner_name(actual_node_name)
         if optional_inner_name == nil then
             if type(actual_node_name) == "table" then
-                actualWork(actual_node_name["name"] or actual_node_name["item"] or actual_node_name["fluid"])
+                actual_work(actual_node_name["name"] or actual_node_name["item"] or actual_node_name["fluid"])
             else
-                actualWork(actual_node_name)
+                actual_work(actual_node_name)
             end
         else
-            actualWork(actual_node_name[optional_inner_name])
+            actual_work(actual_node_name[optional_inner_name])
         end
     end
 
-    function doCallOnObject()
-        checkInnerName(nameOrTable)
+    function do_call_on_object()
+        check_inner_name(name_or_table)
     end
 
-    function doCallOnTable()
-        for _, actual_node_name in pairs(nameOrTable) do
-            checkInnerName(actual_node_name)
+    function do_call_on_table()
+        for _, actual_node_name in pairs(name_or_table) do
+            check_inner_name(actual_node_name)
         end
     end
 
-    if type(nameOrTable) == "table" then
+    if type(name_or_table) == "table" then
         if optional_inner_name ~= nil then
             -- have to distinguish between { item='fish', count=5 } and a table of such entries
-            if nameOrTable[optional_inner_name] == nil then
-                doCallOnTable()
+            if name_or_table[optional_inner_name] == nil then
+                do_call_on_table()
             else
-                doCallOnObject()
+                do_call_on_object()
             end
         else
-            doCallOnTable()
+            do_call_on_table()
         end
     else
-        doCallOnObject()
+        do_call_on_object()
     end
 end
 
