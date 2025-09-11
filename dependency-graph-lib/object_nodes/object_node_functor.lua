@@ -66,11 +66,11 @@ function object_node_functor:add_fulfiller_for_independent_requirement(object, s
 end
 
 ---@param object ObjectNode
----@param nameOrTable string
+---@param name_or_table string
 ---@param source RequirementType
 ---@param requirement_nodes RequirementNodeStorage
-function object_node_functor:add_fulfiller_for_typed_requirement(object, nameOrTable, source, requirement_nodes)
-    if nameOrTable == nil then
+function object_node_functor:add_fulfiller_for_typed_requirement(object, name_or_table, source, requirement_nodes)
+    if name_or_table == nil then
         return
     end
 
@@ -80,12 +80,12 @@ function object_node_functor:add_fulfiller_for_typed_requirement(object, nameOrT
         node:add_fulfiller(object)
     end
 
-    if type(nameOrTable) == "table" then
-        for _, name in pairs(nameOrTable) do
+    if type(name_or_table) == "table" then
+        for _, name in pairs(name_or_table) do
             actually_add_fulfiller(name)
         end
     else
-        actually_add_fulfiller(nameOrTable)
+        actually_add_fulfiller(name_or_table)
     end
 end
 
@@ -125,10 +125,10 @@ end
 ---@param optional_inner_name? string|nil
 function object_node_functor:add_fulfiller_for_object_requirement(fulfiller, name_or_table, object_type, requirement, object_nodes, optional_inner_name)
     -- This function aims to work with a lot of different formats:
-    -- - nameOrTable is an item/entity/whatever directly
-    -- - nameOrTable[optional_inner_name] is an item directly
-    -- - nameOrTable is a table of items
-    -- - nameOrTable is a table of objects, and object[optional_inner_name] is an item
+    -- - name_or_table is an item/entity/whatever directly
+    -- - name_or_table[optional_inner_name] is an item directly
+    -- - name_or_table is a table of items
+    -- - name_or_table is a table of objects, and object[optional_inner_name] is an item
 
     if name_or_table == nil then
         return
@@ -193,24 +193,24 @@ function object_node_functor:add_independent_requirement_to_object(object, sourc
 end
 
 ---@param object ObjectNode
----@param nameOrTable string | table
+---@param name_or_table string | table
 ---@param requirement_type RequirementType
 ---@param requirement_nodes RequirementNodeStorage
-function object_node_functor:add_typed_requirement_to_object(object, nameOrTable, requirement_type, requirement_nodes)
-    local function actualWork(name)
+function object_node_functor:add_typed_requirement_to_object(object, name_or_table, requirement_type, requirement_nodes)
+    local function actual_work(name)
         local descriptor = requirement_descriptor:new_typed_requirement_descriptor(name, requirement_type)
         local requirement = requirement_nodes:find_requirement_node(descriptor)
         object:add_requirement(requirement)
     end
-    if nameOrTable == nil then
+    if name_or_table == nil then
         return
     end
-    if type(nameOrTable) == "table" then
-        for _, name in pairs(nameOrTable) do
-            actualWork(name)
+    if type(name_or_table) == "table" then
+        for _, name in pairs(name_or_table) do
+            actual_work(name)
         end
     else
-        actualWork(nameOrTable)
+        actual_work(name_or_table)
     end
 end
 
