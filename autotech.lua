@@ -48,7 +48,7 @@ function auto_tech:run()
         self:run_phase(self.construct_tech_graph_nodes, "constructing tech graph nodes (2/11)")
         self:run_phase(self.construct_tech_graph_edges, "constructing tech graph edges (3/11)")
         self:run_phase(self.linearise_tech_graph, "tech graph linearisation (4/11)")
-        self:run_phase(self.verify_victory_reachable_tech_graph, "verify victory reachable in tech graph (5/11)")
+        self:run_phase(self.verify_all_techs_are_reachable, "verifing all techs are reachable (5/11)")
         self:run_phase(self.calculate_transitive_reduction, "transitive reduction calculation (6/11)")
         self:run_phase(self.set_tech_prerequisites, "tech prerequisites setting (7/11)")
         self:run_phase(self.set_tech_unit, "tech cost setting (8/11)")
@@ -250,16 +250,10 @@ function auto_tech:linearise_tech_graph()
     end)
 end
 
-function auto_tech:verify_victory_reachable_tech_graph()
-    local victory_node = self.technology_nodes:find_technology_node(self.dependency_graph.victory_node)
-    local victory_reachable = victory_node:has_no_more_unfulfilled_requirements()
-    if victory_reachable then
-        if self.configuration.verbose_logging then
-            log("With the canonical choices, the tech graph has a partial linear ordering that allows victory to be reached.")
-        end
-    else
+function auto_tech:verify_all_techs_are_reachable()
+    local function pretty_print_technology_loop_error(unreachable_node)
         -- First, find a loop
-        local current_node = victory_node
+        local current_node = unreachable_node
         local seen_nodes = {}
         while true do
             current_node, _ = current_node:get_any_unfulfilled_requirement()
@@ -293,12 +287,11 @@ function auto_tech:verify_victory_reachable_tech_graph()
         end
         loop_message = loop_message .. "\nAnd we're back to node " .. loop_start.printable_name
 
-        error("Error: no partial linearisation of the tech graph with the canonical choices allows victory to be reached.\n" .. loop_message)
+        error("\n\n\n" .. loop_message .. "\n\n")
     end
-
     self.technology_nodes:for_all_nodes(function(technology_node)
         if not technology_node:has_no_more_unfulfilled_requirements() then
-            error("Node " .. technology_node.printable_name .. " still has unresolved dependencies: " .. technology_node:print_dependencies())
+            pretty_print_technology_loop_error(technology_node)
         end
     end)
 end
