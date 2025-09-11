@@ -98,7 +98,10 @@ function object_node_functor:reverse_add_fulfiller_for_object_requirement(requir
     for _, fulfiller_name in pairs(type(fulfiller_name) == "table" and fulfiller_name or {fulfiller_name}) do
         local node = requirer.requirements[requirement]
         local descriptor = object_node_descriptor:new(fulfiller_name, fulfiller_type)
-        local fulfiller = object_nodes:find_object_node(descriptor, node)
+        local fulfiller = object_nodes:find_object_node_safe(descriptor)
+        if fulfiller == nil then
+            error("Object " .. descriptor.name .. " could not be found so cannot fulfill requirement " .. node.printable_name)
+        end
         node:add_fulfiller(fulfiller)
     end
 end
@@ -136,7 +139,10 @@ function object_node_functor:add_fulfiller_for_object_requirement(fulfiller, nam
     local function actual_work(name)
         if not name then error(serpent.block(name_or_table)) end
         local descriptor = object_node_descriptor:new(name, object_type)
-        local target_node = object_nodes:find_object_node(descriptor)
+        local target_node = object_nodes:find_object_node_safe(descriptor)
+        if target_node == nil then
+            error("Cannot find requirement object " .. name .. " " .. object_type .. ".")
+        end
         local requirement_node = target_node.requirements[requirement]
         if requirement_node == nil then
             if target_node.object.autotech_ignore then
@@ -199,7 +205,10 @@ end
 function object_node_functor:add_typed_requirement_to_object(object, name_or_table, requirement_type, requirement_nodes)
     local function actual_work(name)
         local descriptor = requirement_descriptor:new_typed_requirement_descriptor(name, requirement_type)
-        local requirement = requirement_nodes:find_requirement_node(descriptor)
+        local requirement = requirement_nodes:find_requirement_node_safe(descriptor)
+        if requirement == nil then
+            error("Requirement " .. descriptor.printable_name .. " could not be found so cannot fulfill object " .. object.printable_name)
+        end
         object:add_requirement(requirement)
     end
     if name_or_table == nil then

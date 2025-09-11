@@ -31,18 +31,19 @@ function object_node_storage:add_object_node(object_node)
 end
 
 ---@param descriptor ObjectNodeDescriptor
----@param error_source RequirementNode?
 ---@returns ObjectNode
-function object_node_storage:find_object_node(descriptor, error_source)
+function object_node_storage:find_object_node(descriptor)
     local node = self.nodes[descriptor.object_type][descriptor.name]
     if not node then
-        local err = "\nUnable to find node based on descriptor: " .. descriptor.printable_name
-        if error_source then
-            err = err .. "\nCannot fulfill requirement " .. error_source.printable_name
-        end
-        error(err)
+        error("Unable to find node based on descriptor: " .. descriptor.printable_name)
     end
     return node
+end
+
+---@param descriptor ObjectNodeDescriptor
+---@returns ObjectNode
+function object_node_storage:find_object_node_safe(descriptor)
+    return self.nodes[descriptor.object_type][descriptor.name]
 end
 
 ---@param functor fun(object_type: ObjectType, object: ObjectNode)
