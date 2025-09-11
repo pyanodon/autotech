@@ -98,7 +98,7 @@ function object_node_functor:reverse_add_fulfiller_for_object_requirement(requir
     for _, fulfiller_name in pairs(type(fulfiller_name) == "table" and fulfiller_name or {fulfiller_name}) do
         local node = requirer.requirements[requirement]
         local descriptor = object_node_descriptor:new(fulfiller_name, fulfiller_type)
-        local fulfiller = object_nodes:find_object_node(descriptor)
+        local fulfiller = object_nodes:find_object_node(descriptor, node)
         if fulfiller ~= nil then
             node:add_fulfiller(fulfiller)
         else
