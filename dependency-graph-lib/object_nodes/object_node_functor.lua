@@ -248,7 +248,15 @@ function object_node_functor:add_fulfiller_to_productlike_object(fulfiller, prod
         local type_of_productlike = productlike.type == "item" and object_types.item or object_types.fluid
         local type_of_requirement = productlike.type == "item" and item_requirements.create or fluid_requirements.create
         local descriptor = object_node_descriptor:new(productlike.name, type_of_productlike)
-        object_nodes:find_object_node(descriptor).requirements[type_of_requirement]:add_fulfiller(fulfiller)
+        local target_node = object_nodes:find_object_node_safe(descriptor)
+        if target_node == nil then
+            error("Cannot find productlike object " .. productlike.name .. " " .. productlike.type .. ".")
+        end
+        local requirement_node = target_node.requirements[type_of_requirement]
+        if requirement_node == nil then
+            error("Cannot find requirement \"" .. type_of_requirement .. "\" on " .. productlike.name .. " " .. productlike.type .. ".")
+        end
+        requirement_node:add_fulfiller(fulfiller)
     end
 
     if type(productlike_possibility_table) == "string" then
