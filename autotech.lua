@@ -44,17 +44,18 @@ function auto_tech:run()
     self:run_phase(self.vanilla_massaging, "vanilla massaging")
     self.dependency_graph:run()
     self:run_phase(function()
-        self:run_phase(self.determine_mandatory_dependencies, "determine mandatory dependencies (1/11)")
-        self:run_phase(self.construct_tech_graph_nodes, "constructing tech graph nodes (2/11)")
-        self:run_phase(self.construct_tech_graph_edges, "constructing tech graph edges (3/11)")
-        self:run_phase(self.linearise_tech_graph, "tech graph linearisation (4/11)")
-        self:run_phase(self.verify_all_techs_are_reachable, "verifing all techs are reachable (5/11)")
-        self:run_phase(self.calculate_transitive_reduction, "transitive reduction calculation (6/11)")
-        self:run_phase(self.set_tech_prerequisites, "tech prerequisites setting (7/11)")
-        self:run_phase(self.set_tech_unit, "tech cost setting (8/11)")
-        self:run_phase(self.set_tech_order, "tech order setting (9/11)")
-        self:run_phase(self.set_science_packs, "science packs setting (10/11)")
-        self:run_phase(self.serialize_cache_file, "cache file output (11/11)")
+        self:run_phase(self.determine_mandatory_dependencies, "determine mandatory dependencies (1/12)")
+        self:run_phase(self.construct_tech_graph_nodes, "constructing tech graph nodes (2/12)")
+        self:run_phase(self.construct_tech_graph_edges, "constructing tech graph edges (3/12)")
+        self:run_phase(self.linearise_tech_graph, "tech graph linearisation (4/12)")
+        self:run_phase(self.verify_all_techs_are_reachable, "verifing all techs are reachable (5/12)")
+        self:run_phase(self.calculate_transitive_reduction, "transitive reduction calculation (6/12)")
+        self:run_phase(self.set_tech_prerequisites, "tech prerequisites setting (7/12)")
+        self:run_phase(self.set_tech_unit, "tech cost setting (8/12)")
+        self:run_phase(self.set_tech_order, "tech order setting (9/12)")
+        self:run_phase(self.set_science_packs, "science packs setting (10/12)")
+        self:run_phase(self.determine_essential_technologies, "determining essential techs (11/12)")
+        self:run_phase(self.serialize_cache_file, "cache file output (12/12)")
     end, "autotech")
     error("Autotech completed successfully.")
 end
@@ -498,12 +499,36 @@ function auto_tech:set_science_packs()
     end)
 end
 
+function auto_tech:determine_essential_technologies()
+    local victory_tech = data.raw.technology[self.configuration.victory_tech]
+    local q = deque.new()
+    q:push_right(victory_tech)
+    local seen = {}
+
+    self.technology_nodes:for_all_nodes(function(technology_node)
+        local factorio_tech = technology_node.object_node.object
+        factorio_tech.essential = false
+        self:write_to_cache_file(technology_node, "essential", false)
+    end)
+
+    while not q:is_empty() do
+        ---@type TechnologyPrototype
+        local factorio_tech = q:pop_left()
+        if seen[factorio_tech.name] then goto continue end
+        seen[factorio_tech.name] = true
+        factorio_tech.essential = true
+        self:write_to_cache_file({object_node = {object = {name = factorio_tech.name}}}, "essential", true)
+        for _, prerequisite in pairs(factorio_tech.prerequisites) do
+            q:push_right(data.raw.technology[prerequisite])
+        end
+        ::continue::
+    end
+end
+
 function auto_tech:write_to_cache_file(technology_node, key, data)
     local factorio_tech = technology_node.object_node.object
     self.cache_file = self.cache_file or {}
     self.cache_file[factorio_tech.name] = self.cache_file[factorio_tech.name] or {}
-
-    assert(not self.cache_file[factorio_tech.name][key], key)
     self.cache_file[factorio_tech.name][key] = data
 end
 
