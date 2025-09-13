@@ -152,7 +152,7 @@ function object_node_functor:add_fulfiller_for_object_requirement(fulfiller, nam
         end
         requirement_node:add_fulfiller(fulfiller)
     end
-    function check_inner_name(actual_node_name)
+    local function check_inner_name(actual_node_name)
         if optional_inner_name == nil then
             if type(actual_node_name) == "table" then
                 actual_work(actual_node_name["name"] or actual_node_name["item"] or actual_node_name["fluid"])
@@ -164,11 +164,11 @@ function object_node_functor:add_fulfiller_for_object_requirement(fulfiller, nam
         end
     end
 
-    function do_call_on_object()
+    local function do_call_on_object()
         check_inner_name(name_or_table)
     end
 
-    function do_call_on_table()
+    local function do_call_on_table()
         for _, actual_node_name in pairs(name_or_table) do
             check_inner_name(actual_node_name)
         end
@@ -241,19 +241,22 @@ function object_node_functor:add_fulfiller_to_productlike_object(fulfiller, prod
         return
     end
 
-    function inner_function(productlike)
-        local type_of_productlike = productlike.type and (productlike.type == "item" and object_types.item or object_types.fluid) or object_types.item
-        local type_of_requirement = productlike.type and (productlike.type == "item" and item_requirements.create or fluid_requirements.create) or item_requirements.create
-        local descriptor = object_node_descriptor:new(productlike.name or productlike[1] or productlike, type_of_productlike)
+    local function inner_function(productlike)
+        assert(productlike.type, fulfiller.printable_name)
+        assert(productlike.name, fulfiller.printable_name)
+        if productlike.autotech_ignore then return end
+        local type_of_productlike = productlike.type == "item" and object_types.item or object_types.fluid
+        local type_of_requirement = productlike.type == "item" and item_requirements.create or fluid_requirements.create
+        local descriptor = object_node_descriptor:new(productlike.name, type_of_productlike)
         object_nodes:find_object_node(descriptor).requirements[type_of_requirement]:add_fulfiller(fulfiller)
     end
 
-    if type(productlike_possibility_table) == "table" then
+    if type(productlike_possibility_table) == "string" then
+        inner_function{type = "item", name = productlike_possibility_table}
+    else
         for _, productlike in pairs(productlike_possibility_table or {}) do
             inner_function(productlike)
         end
-    else
-        inner_function(productlike_possibility_table)
     end
 end
 
@@ -263,7 +266,7 @@ end
 function object_node_functor:add_fulfiller_to_triggerlike_object(fulfiller, triggerlike_possibility_table, object_nodes)
     if triggerlike_possibility_table == nil then return end
 
-    function parse_trigger_effect(effect)
+    local function parse_trigger_effect(effect)
         if type(effect) ~= "table" then return end
 
         if (effect.type == "create-explosion" or effect.type == "create-entity") and effect.entity_name then
@@ -299,7 +302,7 @@ function object_node_functor:add_fulfiller_to_triggerlike_object(fulfiller, trig
         end
     end
 
-    function inner_function(effects)
+    local function inner_function(effects)
         if not effects then return end
 
         if effects.type then

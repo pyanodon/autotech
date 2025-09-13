@@ -91,10 +91,6 @@ function object_node:on_fulfil_requirement(requirement)
 end
 
 function object_node:on_node_becomes_independent()
-    if self.object.autotech_is_not_primary_recipe then
-        return {}
-    end
-
     local result = {}
     for _, requirement in pairs(self.this_can_fulfil) do
         local newly_independent_nodes = requirement:try_add_canonical_fulfiller(self)

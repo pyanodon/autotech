@@ -38,11 +38,12 @@ local recipe_functor = object_node_functor:new(object_types.recipe,
 
         local i = 1
         for _, ingredient in pairs(recipe.ingredients or {}) do
+            if ingredient.autotech_ignore then error("autotech_ignore is not supported for ingredients, only results. recipe: " .. recipe.name) end
             object_node_functor:add_productlike_fulfiller(object.requirements[recipe_requirements.ingredient .. ": " .. ingredient.name], ingredient, object_nodes)
             i = i + 1
         end
 
-        object_node_functor:add_fulfiller_to_productlike_object(object, recipe.results or recipe.result, object_nodes)
+        object_node_functor:add_fulfiller_to_productlike_object(object, recipe.results, object_nodes)
 
         if recipe.enabled ~= false then
             object.requirements[recipe_requirements.enable]:add_fulfiller(object_nodes:find_object_node(object_node_descriptor:unique_node(object_types.start)))
