@@ -358,7 +358,7 @@ $PyPPConfig = $PyPPPrevConfig.Replace('data.raw["bool-setting"]["pypp-dev-mode"]
 $PyPPConfig = $PyPPConfig.Replace('data.raw["bool-setting"]["pypp-create-cache"].forced_value  = false', 'data.raw["bool-setting"]["pypp-create-cache"].forced_value  = true')
 Set-Content -Path $PyPPConfigPath -Value $PyPPConfig -Encoding UTF8 -NoNewline
 
-$FactorioArgs = "--mod-directory $FactorioModsPath --benchmark notafile" #Stand in for "load then exit"
+$FactorioArgs = "--mod-directory $FactorioModsPath --start-server notafile" #Stand in for "load then exit"
 $BaseMods = @(
     "base",
     "pypostprocessing",
