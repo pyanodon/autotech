@@ -57,7 +57,7 @@ function auto_tech:run()
         self:run_phase(self.determine_essential_technologies, "determining essential techs (11/12)")
         self:run_phase(self.serialize_cache_file, "cache file output (12/12)")
     end, "autotech")
-    error("Autotech completed successfully.")
+    log("Autotech completed successfully.")
 end
 
 function auto_tech:vanilla_massaging()
