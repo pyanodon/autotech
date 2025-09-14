@@ -38,7 +38,7 @@ local recipe_functor = object_node_functor:new(object_types.recipe,
 
         local i = 1
         for _, ingredient in pairs(recipe.ingredients or {}) do
-            if ingredient.autotech_ignore then error("autotech_ignore is not supported for ingredients, only results. recipe: " .. recipe.name) end
+            if ingredient.autotech_is_not_primary_source then error("autotech_is_not_primary_source is not supported for ingredients, only results. recipe: " .. recipe.name) end
             object_node_functor:add_productlike_fulfiller(object.requirements[recipe_requirements.ingredient .. ": " .. ingredient.name], ingredient, object_nodes)
             i = i + 1
         end

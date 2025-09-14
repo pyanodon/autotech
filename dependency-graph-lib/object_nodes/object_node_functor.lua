@@ -244,7 +244,7 @@ function object_node_functor:add_fulfiller_to_productlike_object(fulfiller, prod
     local function inner_function(productlike)
         assert(productlike.type, fulfiller.printable_name)
         assert(productlike.name, fulfiller.printable_name)
-        if productlike.autotech_ignore then return end
+        if productlike.autotech_is_not_primary_source then return end
         local type_of_productlike = productlike.type == "item" and object_types.item or object_types.fluid
         local type_of_requirement = productlike.type == "item" and item_requirements.create or fluid_requirements.create
         local descriptor = object_node_descriptor:new(productlike.name, type_of_productlike)
