@@ -362,7 +362,8 @@ $FactorioArgs = "--mod-directory $FactorioModsPath --start-server notafile" #Sta
 $BaseMods = @(
     "base",
     "pypostprocessing",
-    "autotech"
+    "autotech",
+    "enable-all-feature-flags"
 )
 $GraphicModsLookup = @{
     pyalienlife = @("pyalienlifegraphics", "pyalienlifegraphics2", "pyalienlifegraphics3")
