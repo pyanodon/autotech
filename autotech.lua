@@ -418,14 +418,6 @@ function auto_tech:set_tech_unit()
             factorio_tech.unit.count_formula = nil
             self:write_to_cache_file(technology_node, "count", factorio_tech.unit.count)
         end
-
-        local time = 1
-        for _, science_pack in pairs(factorio_tech.unit.ingredients or {}) do
-            science_pack = science_pack[1]
-            time = math.max(time, self.configuration.tech_cost_time_requirement[science_pack] or 1)
-        end
-        factorio_tech.unit.time = time
-        self:write_to_cache_file(technology_node, "time", time)
     end)
 end
 
@@ -496,6 +488,14 @@ function auto_tech:set_science_packs()
         end
         factorio_tech.unit.ingredients = ingredients
         self:write_to_cache_file(technology_node, "ingredients", ingredients)
+
+        local time = 1
+        for _, science_pack in pairs(factorio_tech.unit.ingredients) do
+            science_pack = science_pack[1]
+            time = math.max(time, self.configuration.tech_cost_time_requirement[science_pack] or 1)
+        end
+        factorio_tech.unit.time = time
+        self:write_to_cache_file(technology_node, "time", time)
     end)
 end
 
