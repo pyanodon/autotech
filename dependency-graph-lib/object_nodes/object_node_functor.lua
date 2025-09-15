@@ -141,14 +141,14 @@ function object_node_functor:add_fulfiller_for_object_requirement(fulfiller, nam
         local descriptor = object_node_descriptor:new(name, object_type)
         local target_node = object_nodes:find_object_node_safe(descriptor)
         if target_node == nil then
-            error("Cannot find requirement object " .. name .. " " .. object_type .. ".")
+            error("Cannot find requirement object " .. name .. " (" .. object_type .. ") for " .. fulfiller.printable_name)
         end
         local requirement_node = target_node.requirements[requirement]
         if requirement_node == nil then
             if target_node.object.autotech_ignore then
                 return
             end
-            error("Cannot find requirement \"" .. requirement .. "\" on " .. name .. " " .. object_type .. ".")
+            error("Cannot find requirement \"" .. requirement .. "\" on " .. name .. " (" .. object_type .. ") for " .. fulfiller.printable_name)
         end
         requirement_node:add_fulfiller(fulfiller)
     end
