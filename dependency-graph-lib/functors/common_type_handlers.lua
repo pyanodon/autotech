@@ -31,8 +31,7 @@ end
 ---@param object_nodes ObjectNodeStorage
 function common_type_handlers:handle_surface_conditions(surface_conditions, object_node_functor, object, object_nodes)
     if not feature_flags.space_travel then return end
-    if not surface_conditions then return end
-    assert(#surface_conditions > 0)
+    if not surface_conditions or #surface_conditions == 0 then return end
 
     for _, space_location_type in pairs{"planet", "surface"} do
         for _, planet in pairs(data.raw[space_location_type]) do
