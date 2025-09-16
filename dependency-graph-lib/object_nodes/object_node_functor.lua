@@ -7,6 +7,7 @@ local item_requirements = require "dependency-graph-lib.requirements.item_requir
 local fluid_requirements = require "dependency-graph-lib.requirements.fluid_requirements"
 local entity_requirements = require "dependency-graph-lib.requirements.entity_requirements"
 local tile_requirements = require "dependency-graph-lib.requirements.tile_requirements"
+local default_requirements = require "dependency-graph-lib.requirements.default_requirements"
 
 ---Defines how to register requirements and dependencies for a specific object type.
 ---@class ObjectNodeFunctor
@@ -52,6 +53,19 @@ end
 function object_node_functor:register_dependencies(object, requirement_nodes, object_nodes)
     self:check_object_type(object)
     self.register_dependencies_func(object, requirement_nodes, object_nodes)
+
+    -- allow users to manually define objects that this node unlocks.
+    -- for example, pysex uses this for the planet atmospheres to unlock all the fluids.
+    local autotech_additional_unlocks = object.object.autotech_additional_unlocks
+    if not autotech_additional_unlocks then return end
+    for additional_unlock, object_type in pairs(autotech_additional_unlocks) do
+        local object_type = object_types[object_type]
+        local default_requirement = default_requirements[object_type]
+        if not default_requirement then
+            error("No default requirements defined for type " .. object_type)
+        end
+        object_node_functor:add_fulfiller_for_object_requirement(object, additional_unlock, object_type, default_requirement, object_nodes)
+    end
 end
 
 -- These are static helper functions
