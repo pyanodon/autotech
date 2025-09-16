@@ -115,18 +115,25 @@ local debris_items = function()
     }
 end
 
-local set_always_available_for_starting_items = function()
-    for _, item_type in pairs {created_items, respawn_items, ship_items, debris_items} do
-        for item_name in pairs(item_type()) do
-            for item_type in pairs(defines.prototypes.item) do
-                local item = (data.raw[item_type] or {})[item_name]
-                if item and item.autotech_always_available == nil then
-                    item.autotech_always_available = true
-                    break
-                end
+local function set_always_available_for_starting_items(items)
+    for item_name in pairs(items) do
+        for item_type in pairs(defines.prototypes.item) do
+            local item = (data.raw[item_type] or {})[item_name]
+            if item and item.autotech_always_available == nil then
+                item.autotech_always_available = true
+                break
             end
         end
     end
 end
 
-set_always_available_for_starting_items()
+if mods.pystellarexpedition then
+    local crash_site_items = require "__pystellarexpedition__.prototypes.crash-site-items"
+    crash_site_items = table.invert(table.map(crash_site_items, function(item) return item.name end))
+    set_always_available_for_starting_items(crash_site_items)
+else
+    set_always_available_for_starting_items(created_items())
+    set_always_available_for_starting_items(respawn_items())
+    set_always_available_for_starting_items(ship_items())
+    set_always_available_for_starting_items(debris_items())
+end
