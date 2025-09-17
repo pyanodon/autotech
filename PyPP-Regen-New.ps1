@@ -363,7 +363,8 @@ $BaseMods = @(
     "base",
     "pypostprocessing",
     "autotech",
-    "enable-all-feature-flags"
+    "enable-all-feature-flags",
+    "elevated-rails"
 )
 $GraphicModsLookup = @{
     pyalienlife = @("pyalienlifegraphics", "pyalienlifegraphics2", "pyalienlifegraphics3")
