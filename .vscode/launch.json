@@ -5,13 +5,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "lua",
-            "request": "launch",
-            "name": "Run autotech test",
-            "program": "${workspaceFolder}\\test\\regression_test.lua",
-            "arg": ["${workspaceFolder}\\dependency-graph-lib\\test\\filtered_input\\Base-data-raw-dump.json", ">", "last_output.txt"],
-        },
-        {
             // Uses the Factorio Modding Toolkit extension
             // Headless mode can't be used for debugging, only use for running tests
             "type": "factoriomod",
@@ -21,7 +14,7 @@
             "hookData": true,
             // Assume the parent folder of autotech is the mod folder
             // dependency-graph-lib needs to be in the same folder as autotech
-            "modsPath": "${workspaceFolder}\\..", 
+            "modsPath": "${workspaceFolder}\\..",
             "factorioArgs": ["--start-server", "--create test.sav"]
         },
         {
@@ -33,7 +26,7 @@
             "hookData": true,
             // Assume the parent folder of autotech is the mod folder
             // dependency-graph-lib needs to be in the same folder as autotech
-            "modsPath": "${workspaceFolder}\\..", 
+            "modsPath": "${workspaceFolder}\\..",
         },
     ]
 }
