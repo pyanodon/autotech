@@ -398,7 +398,7 @@ function auto_tech:set_tech_unit()
         if science_pack_unlocked_by_this_tech then
             if factorio_tech.name == "military-science-pack" then
                 if verbose_logging then
-                    log("Depth of a military science pack tech is " .. technology_node.depth)
+                    log("Depth of a military science pack tech is " .. technology_node.depth .. ". it will be ignored as a non-progression pack.")
                 end
                 goto continue
             end
@@ -412,39 +412,36 @@ function auto_tech:set_tech_unit()
 
     --sort the table of depths from lowest to highest
     table.sort(depths_of_science_packs)
-    for i,pack_depth in pairs(depths_of_science_packs) do
-        if verbose_logging then
-                log("Depth of a new science pack tech is " .. pack_depth)
+    if verbose_logging then
+        for _,pack_depth in pairs(depths_of_science_packs) do
+            log("Depth of a new science pack tech is " .. pack_depth)
         end
     end
+    
 
     self.technology_nodes:for_all_nodes(function(technology_node)
         local factorio_tech = technology_node.object_node.object
         if factorio_tech.research_trigger then return end
         factorio_tech.unit = factorio_tech.unit or {}
 
-        --get the relative depth of the technology compared to the science pack, with the first tech using the pack having a relative depth of 1
-        local relative_depth_in_science_tier = technology_node.depth
-        local length_of_science_tier = 1
-        for i,pack_depth in pairs(depths_of_science_packs) do
-            if i == #depths_of_science_packs then
-                length_of_science_tier = max_depth-depths_of_science_packs[i]
-                relative_depth_in_science_tier = relative_depth_in_science_tier - depths_of_science_packs[i]
+        --get the relative depth of the technology compared to the science pack, as a percentage
+        local relative_depth_percent = -1
+        local absolute_depth_in_science_tier = technology_node.depth
+        for i = #depths_of_science_packs, 2, -1 do -- work from largest to smallest, end at 2 as we won't be adjusting automation tech costs
+            local current_tier_depth = depths_of_science_packs[i] + 1 -- Add one as we want the first tech, not the science pack
+            if technology_node.depth >= current_tier_depth then
+                local next_tier_depth = depths_of_science_packs[i + 1] or max_depth
+                local length_of_science_tier = next_tier_depth - current_tier_depth
+                absolute_depth_in_science_tier = absolute_depth_in_science_tier - current_tier_depth
+                relative_depth_percent = (technology_node.depth - current_tier_depth) / length_of_science_tier -- aka relative depth in science tier
                 break
-            else
-                if depths_of_science_packs[i+1] >= technology_node.depth then
-                    length_of_science_tier = depths_of_science_packs[i+1]-depths_of_science_packs[i]
-                    if i>1 then --skipping automation science
-                        relative_depth_in_science_tier = relative_depth_in_science_tier - depths_of_science_packs[i]
-                    end
-                    break
-                end
             end
-            
         end
 
-        number_of_initial_trigger_techs=depths_of_science_packs[1]+1
-
+        number_of_initial_trigger_techs=depths_of_science_packs[1] + 1
+        if verbose_logging then
+            log("There are " .. number_of_initial_trigger_techs .. " trigger techs at the start")
+        end
         local depth_percent = ((technology_node.depth - number_of_initial_trigger_techs)/ (max_depth- number_of_initial_trigger_techs))
         factorio_tech.unit.count = start + (victory - start) * (depth_percent ^ exponent)
 
@@ -452,12 +449,11 @@ function auto_tech:set_tech_unit()
             error(depth_percent .. "\n" .. serpent.block(factorio_tech) .. serpent.block(self.configuration))
         end
         if verbose_logging then
-            log("Technology " .. factorio_tech.name .. " has a depth of " .. technology_node.depth .. " and a relative depth from the last science pack " .. relative_depth_in_science_tier .. ". Calculated science pack cost is " .. factorio_tech.unit.count)
+            log("Technology " .. factorio_tech.name .. " has a depth of " .. technology_node.depth .. ", absolute depth from last science pack of" .. absolute_depth_in_science_tier .. " and a relative depth in the science tier " .. relative_depth_percent .. ". Calculated science pack cost is " .. factorio_tech.unit.count)
         end
-        if relative_depth_in_science_tier > 0 then
-            if relative_depth_in_science_tier < technology_node.depth then
-                x = (relative_depth_in_science_tier-1)/(length_of_science_tier-1)
-                factorio_tech.unit.count = factorio_tech.unit.count*(0.5*(1.0-x)+x) --linear scaling between 0.5 and full cost across the science tier
+        if relative_depth_percent >= 0 then
+            if absolute_depth_in_science_tier < technology_node.depth then
+                factorio_tech.unit.count = factorio_tech.unit.count*(0.5*(1.0-relative_depth_percent)+relative_depth_percent) --linear scaling between 0.5 and full cost across the science tier
             end
         end
         factorio_tech.unit.count = math.max(cost_rounding(factorio_tech.unit.count), 1)
