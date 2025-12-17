@@ -396,19 +396,20 @@ function auto_tech:set_tech_unit()
         local factorio_tech = technology_node.object_node.object
         local science_pack_unlocked_by_this_tech = data.raw.tool[technology_node.object_node.object.name]
         if science_pack_unlocked_by_this_tech then
-            if factorio_tech.name == "military-science-pack" then
+            if factorio_tech.name ~= "military-science-pack" then
+                depths_of_science_packs[#depths_of_science_packs+1]=technology_node.depth
                 if verbose_logging then
-                    log("Depth of a military science pack tech is " .. technology_node.depth .. ". it will be ignored as a non-progression pack.")
+                    log("Depth of a new science pack tech is " .. technology_node.depth)
                 end
-                goto continue
+                return
             end
-            depths_of_science_packs[#depths_of_science_packs+1]=technology_node.depth
             if verbose_logging then
-                log("Depth of a new science pack tech is " .. technology_node.depth)
+                log("Depth of a military science pack tech is " .. technology_node.depth .. ". it will be ignored as a non-progression pack.")
             end
-            ::continue::
         end
     end)
+
+    
 
     --sort the table of depths from lowest to highest
     table.sort(depths_of_science_packs)
@@ -416,6 +417,22 @@ function auto_tech:set_tech_unit()
         for _,pack_depth in pairs(depths_of_science_packs) do
             log("Depth of a new science pack tech is " .. pack_depth)
         end
+    end
+
+    local number_of_initial_trigger_techs = 0
+    -- count the amount of trigger techs leading to the initial science pack
+    for i = 1, math.min(#self.technology_nodes_array, depths_of_science_packs[1]+1) do
+        local node = self.technology_nodes_array[i]
+        if not node.object_node.object.research_trigger then
+            break
+        end
+        if verbose_logging then
+            log(node.printable_name .. " is the new latest trigger tech")
+        end
+        number_of_initial_trigger_techs = node.depth + 1
+    end
+    if verbose_logging then
+        log("Number of initial trigger techs is " .. number_of_initial_trigger_techs)
     end
     
 
@@ -438,10 +455,6 @@ function auto_tech:set_tech_unit()
             end
         end
 
-        number_of_initial_trigger_techs=depths_of_science_packs[1] + 1
-        if verbose_logging then
-            log("There are " .. number_of_initial_trigger_techs .. " trigger techs at the start")
-        end
         local depth_percent = ((technology_node.depth - number_of_initial_trigger_techs)/ (max_depth- number_of_initial_trigger_techs))
         factorio_tech.unit.count = start + (victory - start) * (depth_percent ^ exponent)
 
