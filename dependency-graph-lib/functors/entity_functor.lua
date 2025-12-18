@@ -35,6 +35,31 @@ local is_energy_generator = {
     ["lightning-attractor"] = true,
 }
 
+local get_all_fluidboxes = function(entity)
+    local type = entity.type
+    if (type == "assembling-machine" or type == "rocket-silo" or type == "furnace") then
+        return entity.fluid_boxes or {}
+    end
+
+    local fluid_boxes = {}
+    if entity.fluid_box then
+        table.insert(fluid_boxes, entity.fluid_box)
+    end
+    if entity.output_fluid_box then
+        table.insert(fluid_boxes, entity.output_fluid_box)
+    end
+    if entity.input_fluid_box then
+        table.insert(fluid_boxes, entity.input_fluid_box)
+    end
+    if entity.fuel_fluid_box then
+        table.insert(fluid_boxes, entity.fuel_fluid_box)
+    end
+    if entity.oxidizer_fluid_box then
+        table.insert(fluid_boxes, entity.oxidizer_fluid_box)
+    end
+    return fluid_boxes
+end
+
 local entity_functor = object_node_functor:new(object_types.entity,
     function(object, requirement_nodes)
         local entity = object.object
@@ -58,9 +83,7 @@ local entity_functor = object_node_functor:new(object_types.entity,
             requirement_node:add_new_object_dependent_requirement(entity_requirements.required_fuel_category, object, requirement_nodes, object.configuration)
         end
 
-        local fluid_boxes = entity.fluid_boxes or {}
-        if entity.fluid_box then table.insert(fluid_boxes, entity.fluid_box) end
-        if entity.output_fluid_box then table.insert(fluid_boxes, entity.output_fluid_box) end
+        local fluid_boxes = get_all_fluidboxes(entity)
         for _, fluid_box in pairs(fluid_boxes) do
             if fluid_box.filter then
                 if fluid_box.production_type == "input" then
@@ -169,9 +192,7 @@ local entity_functor = object_node_functor:new(object_types.entity,
         object_node_functor:add_fulfiller_for_typed_requirement(object, entity.crafting_categories, requirement_types.recipe_category, requirement_nodes)
         object_node_functor:add_fulfiller_for_typed_requirement(object, entity.mining_categories, requirement_types.resource_category, requirement_nodes)
 
-        local fluid_boxes = entity.fluid_boxes or {}
-        if entity.fluid_box then table.insert(fluid_boxes, entity.fluid_box) end
-        if entity.output_fluid_box then table.insert(fluid_boxes, entity.output_fluid_box) end
+        local fluid_boxes = get_all_fluidboxes(entity)
         for _, fluid_box in pairs(fluid_boxes) do
             if fluid_box.filter then
                 if fluid_box.production_type == "input" then
