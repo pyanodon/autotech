@@ -466,12 +466,12 @@ function auto_tech:set_tech_unit()
                 "Technology ",
                 factorio_tech.name,
                 " has a depth of ",
-                technology_node.depth
-                ", absolute depth from last science pack of "
-                absolute_depth_in_science_tier
-                " and a relative depth in the science tier of "
+                technology_node.depth,
+                ", absolute depth from last science pack of ",
+                absolute_depth_in_science_tier,
+                " and a relative depth in the science tier of ",
                 relative_depth_percent,
-                ". Calculated science pack cost is "
+                ". Calculated science pack cost is ",
                 factorio_tech.unit.count
             }))
         end
