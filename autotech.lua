@@ -462,7 +462,18 @@ function auto_tech:set_tech_unit()
             error(depth_percent .. "\n" .. serpent.block(factorio_tech) .. serpent.block(self.configuration))
         end
         if verbose_logging then
-            log("Technology " .. factorio_tech.name .. " has a depth of " .. technology_node.depth .. ", absolute depth from last science pack of" .. absolute_depth_in_science_tier .. " and a relative depth in the science tier " .. relative_depth_percent .. ". Calculated science pack cost is " .. factorio_tech.unit.count)
+            log(table.concat({
+                "Technology ",
+                factorio_tech.name,
+                " has a depth of ",
+                technology_node.depth
+                ", absolute depth from last science pack of "
+                absolute_depth_in_science_tier
+                " and a relative depth in the science tier of "
+                relative_depth_percent,
+                ". Calculated science pack cost is "
+                factorio_tech.unit.count
+            }))
         end
         if relative_depth_percent >= 0 then
             if absolute_depth_in_science_tier < technology_node.depth then
