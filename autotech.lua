@@ -366,6 +366,7 @@ function auto_tech:set_tech_unit()
     local start = self.configuration.tech_cost_starting_cost
     local victory = self.configuration.tech_cost_victory_cost
     local exponent = self.configuration.tech_cost_exponent
+    local nonhalved_packs = self.configuration.tech_cost_nonhalved_packs
     local nonprogression_packs = self.configuration.tech_cost_nonprogression_packs
     local victory_node = self.technology_nodes:find_technology_node(self.dependency_graph.victory_node)
     local max_depth = victory_node.depth - 1
@@ -399,12 +400,13 @@ function auto_tech:set_tech_unit()
         if science_pack_unlocked_by_this_tech then
             if nonprogression_packs[science_pack_unlocked_by_this_tech.name] then
                 if verbose_logging then
-                    log("Depth of a new science pack tech is " .. technology_node.depth)
+                    log("Depth of " .. science_pack_unlocked_by_this_tech.name .. " tech is " .. technology_node.depth .. ". it will be ignored as a non-progression pack.")
                 end
                 return
             end
+            depths_of_science_packs[#depths_of_science_packs + 1] = {pack = science_pack_unlocked_by_this_tech.name, depth = technology_node.depth}
             if verbose_logging then
-                log("Depth of a military science pack tech is " .. technology_node.depth .. ". it will be ignored as a non-progression pack.")
+                log(string.format("Depth of a %s unlock tech is %i", science_pack_unlocked_by_this_tech.name, technology_node.depth))
             end
         end
     end)
@@ -412,16 +414,16 @@ function auto_tech:set_tech_unit()
 
 
     -- sort the table of depths from lowest to highest
-    table.sort(depths_of_science_packs)
+    table.sort(depths_of_science_packs, function(d1, d2) return d1.depth < d2.depth end)
     if verbose_logging then
-        for _, pack_depth in pairs(depths_of_science_packs) do
-            log("Depth of a new science pack tech is " .. pack_depth)
+        for _, pack_tuple in pairs(depths_of_science_packs) do
+            log(string.format("Depth of a %s unlock tech is %i", pack_tuple.pack, pack_tuple.depth))
         end
     end
 
     local number_of_initial_trigger_techs = 0
     -- count the amount of trigger techs leading to the initial science pack
-    for i = 1, math.min(#self.technology_nodes_array, depths_of_science_packs[1] + 1) do
+    for i = 1, math.min(#self.technology_nodes_array, depths_of_science_packs[1].depth + 1) do
         local node = self.technology_nodes_array[i]
         if not node.object_node.object.research_trigger then
             break
@@ -445,9 +447,20 @@ function auto_tech:set_tech_unit()
         local relative_depth_percent = -1
         local absolute_depth_in_science_tier = technology_node.depth
         for i = #depths_of_science_packs, 2, -1 do -- work from largest to smallest, end at 2 as we won't be adjusting automation tech costs
-            local current_tier_depth = depths_of_science_packs[i] + 1 -- Add one as we want the first tech, not the science pack
+            local current_tier_depth = depths_of_science_packs[i].depth + 1 -- Add one as we want the first tech, not the science pack
             if technology_node.depth >= current_tier_depth then
-                local next_tier_depth = depths_of_science_packs[i + 1] or max_depth
+                -- relative depth is not used if the highest pack is excluded from halving logic
+                local highest_pack = depths_of_science_packs[i].pack
+                if nonhalved_packs[highest_pack] then
+                    if verbose_logging then
+                        log(string.format("Tech %s is excluded from halving logic as part of %s", factorio_tech.name, highest_pack))
+                    end
+                    break
+                end
+                -- if there is no next tier, the victory tech location is used
+                local next_tier = depths_of_science_packs[i + 1]
+                local next_tier_depth = next_tier and next_tier.depth or max_depth
+
                 local length_of_science_tier = next_tier_depth - current_tier_depth
                 absolute_depth_in_science_tier = absolute_depth_in_science_tier - current_tier_depth
                 relative_depth_percent = (technology_node.depth - current_tier_depth) / length_of_science_tier -- aka relative depth in science tier
