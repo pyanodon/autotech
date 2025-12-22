@@ -34,6 +34,8 @@ data:extend {{
             ["space-science-pack"] = 5,
         },
         tech_cost_science_packs_per_tier = {1},
+        -- List of science packs that aren't considered to be new tiers (slightly different from nonhalved, as reaching a nonhalved pack is still considered entering a new tier)
+        tech_cost_nonprogression_packs = {},
         victory_tech = "space-science-pack",
         verbose_logging = settings.startup["autotech-verbose-logging"].value == true
     }

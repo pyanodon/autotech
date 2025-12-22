@@ -1,6 +1,17 @@
 --- @meta
 
---- @alias Configuration { verbose_logging: boolean, tech_cost_starting_cost: number, tech_cost_victory_cost: number, tech_cost_exponent: number, tech_cost_rounding_targets: number[], tech_cost_additional_multipliers: table<string, number>, victory_tech: string, tech_cost_time_requirement: table<string, number> }
+--- @class Configuration table containing autotech arguments. Can be modifed by other mods in data-updates, etc.
+--- @field verbose_logging boolean
+--- @field tech_cost_starting_cost number
+--- @field tech_cost_victory_cost number
+--- @field tech_cost_exponent number
+--- @field tech_cost_rounding_targets number[]
+--- @field tech_cost_additional_multipliers table<string, number>
+--- @field tech_cost_time_requirement table<string, number>
+--- @field tech_cost_science_pack_tiers table<string, number>
+--- @field tech_cost_science_packs_per_tier number[]
+--- @field tech_cost_nonprogression_packs table<string, number>
+--- @field victory_tech string
 
 --- @alias RequirementsRegistryFunction fun(object: ObjectNode, requirement_nodes: RequirementNodeStorage)
 --- @alias DependencyRegistryFunction fun(object: ObjectNode, requirement_nodes: RequirementNodeStorage, object_nodes: ObjectNodeStorage)
