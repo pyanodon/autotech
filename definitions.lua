@@ -11,6 +11,7 @@
 --- @field tech_cost_science_pack_tiers table<string, number>
 --- @field tech_cost_science_packs_per_tier number[]
 --- @field tech_cost_nonprogression_packs table<string, number>
+--- @field tech_cost_nonhalved_packs table<string, number>
 --- @field victory_tech string
 
 --- @alias RequirementsRegistryFunction fun(object: ObjectNode, requirement_nodes: RequirementNodeStorage)
