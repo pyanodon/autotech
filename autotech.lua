@@ -366,6 +366,7 @@ function auto_tech:set_tech_unit()
     local start = self.configuration.tech_cost_starting_cost
     local victory = self.configuration.tech_cost_victory_cost
     local exponent = self.configuration.tech_cost_exponent
+    local nonprogression_packs = self.configuration.tech_cost_nonprogression_packs
     local victory_node = self.technology_nodes:find_technology_node(self.dependency_graph.victory_node)
     local max_depth = victory_node.depth - 1
     local depths_of_science_packs = {}
@@ -391,13 +392,12 @@ function auto_tech:set_tech_unit()
         error()
     end
 
-    -- get the depths of all science packs on the tech tree, assuming non-progression military science
+    -- get the depths of all science packs on the tech tree, excluding configured non-progression packs
     self.technology_nodes:for_all_nodes(function(technology_node)
         local factorio_tech = technology_node.object_node.object
-        local science_pack_unlocked_by_this_tech = data.raw.tool[technology_node.object_node.object.name]
+        local science_pack_unlocked_by_this_tech = data.raw.tool[factorio_tech.name]
         if science_pack_unlocked_by_this_tech then
-            if factorio_tech.name ~= "military-science-pack" then
-                depths_of_science_packs[#depths_of_science_packs + 1] = technology_node.depth
+            if nonprogression_packs[science_pack_unlocked_by_this_tech.name] then
                 if verbose_logging then
                     log("Depth of a new science pack tech is " .. technology_node.depth)
                 end
