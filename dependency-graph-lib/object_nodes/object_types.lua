@@ -5,6 +5,7 @@ local object_types = {
     item = "item",
     planet = "planet",
     recipe = "recipe",
+    recipe_category = "recipe_category",
     start = "start",
     technology = "technology",
     tile = "tile",

@@ -23,6 +23,8 @@ local recipe_functor = object_node_functor:new(object_types.recipe,
 
         requirement_node:add_new_object_dependent_requirement_table(ingredient_list(recipe.ingredients), recipe_requirements.ingredient, object, requirement_nodes, object.configuration)
 
+        requirement_node:add_new_object_dependent_requirement(recipe_requirements.required_crafting_category, object, requirement_nodes, object.configuration)
+
         if feature_flags.space_travel and recipe.surface_conditions and #recipe.surface_conditions > 0 then
             requirement_node:add_new_object_dependent_requirement(entity_requirements.required_surface_conditions, object, requirement_nodes, object.configuration)
         end
@@ -34,7 +36,11 @@ local recipe_functor = object_node_functor:new(object_types.recipe,
             return
         end
 
-        object_node_functor:add_typed_requirement_to_object(object, recipe.category or "crafting", requirement_types.recipe_category, requirement_nodes)
+        --object_node_functor:add_typed_requirement_to_object(object, recipe.category or "crafting", requirement_types.recipe_category, requirement_nodes)
+        object_node_functor:reverse_add_fulfiller_for_object_requirement(object, recipe_requirements.required_crafting_category, recipe.category or "crafting", object_types.recipe_category, object_nodes)
+        if recipe.additional_categories then
+            object_node_functor:reverse_add_fulfiller_for_object_requirement(object, recipe_requirements.required_crafting_category, recipe.additional_categories, object_types.recipe_category, object_nodes)
+        end
 
         local i = 1
         for _, ingredient in pairs(recipe.ingredients or {}) do

@@ -5,6 +5,7 @@ local requirement_node = require "dependency-graph-lib.requirement_nodes.require
 local requirement_types = require "dependency-graph-lib.requirement_nodes.requirement_types"
 local item_requirements = require "dependency-graph-lib.requirements.item_requirements"
 local entity_requirements = require "dependency-graph-lib.requirements.entity_requirements"
+local recipe_requirements = require "dependency-graph-lib.requirements.recipe_requirements"
 local fluid_requirements = require "dependency-graph-lib.requirements.fluid_requirements"
 local technology_requirements = require "dependency-graph-lib.requirements.technology_requirements"
 local common_type_handlers = require "dependency-graph-lib.functors.common_type_handlers"
@@ -189,6 +190,7 @@ local entity_functor = object_node_functor:new(object_types.entity,
             object_node_functor:reverse_add_fulfiller_for_object_requirement(object, entity_requirements.required_fuel_category, entity.burner.fuel_categories, object_types.fuel_category, object_nodes)
         end
 
+        object_node_functor:add_fulfiller_for_object_requirement(object, entity.crafting_categories, object_types.recipe_category, recipe_requirements.required_crafting_category, object_nodes)
         object_node_functor:add_fulfiller_for_typed_requirement(object, entity.crafting_categories, requirement_types.recipe_category, requirement_nodes)
         object_node_functor:add_fulfiller_for_typed_requirement(object, entity.mining_categories, requirement_types.resource_category, requirement_nodes)
 
