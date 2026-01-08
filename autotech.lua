@@ -361,6 +361,16 @@ function auto_tech:set_tech_prerequisites()
     end)
 end
 
+local function contains_pack(ingredients, desired_pack)
+    if not ingredients then return false end
+    for _, tuple in pairs(ingredients) do
+        if tuple[1] == desired_pack then
+            return true
+        end
+    end
+    return false
+end
+
 function auto_tech:set_tech_unit()
     local verbose_logging = self.configuration.verbose_logging
     local start = self.configuration.tech_cost_starting_cost
@@ -454,6 +464,13 @@ function auto_tech:set_tech_unit()
                 if nonhalved_packs[highest_pack] then
                     if verbose_logging then
                         log(string.format("Tech %s is excluded from halving logic as part of %s", factorio_tech.name, highest_pack))
+                    end
+                    break
+                end
+                -- If the tech doesn't actually contain highest_pack, we don't apply halving as we've passed the depth where cost=100%
+                if not contains_pack(factorio_tech.unit.ingredients, highest_pack) then
+                    if verbose_logging then
+                        log(string.format("Tech %s has a depth (%i) greater than the next science pack (%s, %i) and is excluded from halving", factorio_tech.name, absolute_depth_in_science_tier, highest_pack, current_tier_depth - 1))
                     end
                     break
                 end
