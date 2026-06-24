@@ -44,18 +44,19 @@ function auto_tech:run()
     self:run_phase(self.vanilla_massaging, "vanilla massaging")
     self.dependency_graph:run()
     self:run_phase(function()
-        self:run_phase(self.determine_mandatory_dependencies, "determine mandatory dependencies (1/12)")
-        self:run_phase(self.construct_tech_graph_nodes, "constructing tech graph nodes (2/12)")
-        self:run_phase(self.construct_tech_graph_edges, "constructing tech graph edges (3/12)")
-        self:run_phase(self.linearise_tech_graph, "tech graph linearisation (4/12)")
-        self:run_phase(self.verify_all_techs_are_reachable, "verifing all techs are reachable (5/12)")
-        self:run_phase(self.calculate_transitive_reduction, "transitive reduction calculation (6/12)")
-        self:run_phase(self.set_tech_prerequisites, "tech prerequisites setting (7/12)")
-        self:run_phase(self.set_tech_unit, "tech cost setting (8/12)")
-        self:run_phase(self.set_tech_order, "tech order setting (9/12)")
-        self:run_phase(self.set_science_packs, "science packs setting (10/12)")
-        self:run_phase(self.determine_essential_technologies, "determining essential techs (11/12)")
-        self:run_phase(self.serialize_cache_file, "cache file output (12/12)")
+        self:run_phase(self.determine_mandatory_dependencies, "determine mandatory dependencies (1/13)")
+        self:run_phase(self.construct_tech_graph_nodes, "constructing tech graph nodes (2/13)")
+        self:run_phase(self.construct_tech_graph_edges, "constructing tech graph edges (3/13)")
+        self:run_phase(self.linearise_tech_graph, "tech graph linearisation (4/13)")
+        self:run_phase(self.verify_all_techs_are_reachable, "verifing all techs are reachable (5/13)")
+        self:run_phase(self.calculate_transitive_reduction, "transitive reduction calculation (6/13)")
+        self:run_phase(self.set_tech_prerequisites, "tech prerequisites setting (7/13)")
+        self:run_phase(self.set_tech_unit, "tech cost setting (8/13)")
+        self:run_phase(self.set_tech_order, "tech order setting (9/13)")
+        self:run_phase(self.set_science_packs, "science packs setting (10/13)")
+        self:run_phase(self.determine_essential_technologies, "determining essential techs (11/13)")
+        self:run_phase(self.serialize_cache_file, "cache file output (12/13)")
+        self:run_phase(self.cleanup, "clean up data.raw (13/13)")
     end, "autotech")
     log("Autotech completed successfully.")
 end
@@ -636,6 +637,20 @@ function auto_tech:serialize_cache_file()
     result = add_newlines(lzw.lzw_compress(result), 100)
     -- add sentinels so that the cache file can be automatically extracted in PyPP-Regen-New.ps1
     log("<BEGINPYPP>\n" .. result .. "\n<ENDPYPP>")
+end
+
+function auto_tech:cleanup()
+    for _, type in pairs(data.raw) do
+        for _, prototype in pairs(type) do
+            prototype.autotech_ignore = nil
+            prototype.autotech_always_available = nil
+            if prototype.results then
+                for _, result in pairs(prototype.results) do
+                    result.autotech_is_not_primary_source = nil
+                end
+            end
+        end
+    end
 end
 
 return auto_tech

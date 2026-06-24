@@ -34,7 +34,8 @@ local recipe_functor = object_node_functor:new(object_types.recipe,
             return
         end
 
-        object_node_functor:add_typed_requirement_to_object(object, recipe.category or "crafting", requirement_types.recipe_category, requirement_nodes)
+        -- TODO support categories[] properly
+        object_node_functor:add_typed_requirement_to_object(object, recipe.categories and recipe.categories[1] or "crafting", requirement_types.recipe_category, requirement_nodes)
 
         local i = 1
         for _, ingredient in pairs(recipe.ingredients or {}) do
