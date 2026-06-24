@@ -397,7 +397,11 @@ function auto_tech:set_tech_unit()
     -- get the depths of all science packs on the tech tree, excluding configured non-progression packs
     self.technology_nodes:for_all_nodes(function(technology_node)
         local factorio_tech = technology_node.object_node.object
-        local science_pack_unlocked_by_this_tech = data.raw.tool[factorio_tech.name]
+        local science_pack_unlocked_by_this_tech
+        for type in pairs(defines.prototypes.item) do
+            science_pack_unlocked_by_this_tech = (data.raw[type] or {})[factorio_tech.name]
+            if science_pack_unlocked_by_this_tech then break end
+        end
         if science_pack_unlocked_by_this_tech then
             if nonprogression_packs[science_pack_unlocked_by_this_tech.name] then
                 if verbose_logging then
@@ -543,7 +547,11 @@ function auto_tech:set_science_packs()
     while not q:is_empty() do
         ---@type TechnologyNode
         local technology_node = q:pop_left()
-        local science_pack_unlocked_by_this_tech = data.raw.tool[technology_node.object_node.object.name]
+        local science_pack_unlocked_by_this_tech
+        for type in pairs(defines.prototypes.item) do
+            science_pack_unlocked_by_this_tech = (data.raw[type] or {})[technology_node.object_node.object.name]
+            if science_pack_unlocked_by_this_tech then break end
+        end
         for _, node in pairs(technology_node.nodes_that_require_this) do
             local new_node_to_check = not node.science_packs
             node.science_packs = node.science_packs or {}
