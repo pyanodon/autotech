@@ -19,6 +19,17 @@ local dependency_graph_lib = require "dependency-graph-lib/dependency_graph"
 local auto_tech = {}
 auto_tech.__index = auto_tech
 
+-- find all viable science packs, since anything can be a pack now simply checking the tech name isn't good enough
+---@type {[string]: boolean}
+local valid_packs = {}
+for _, technology in pairs(data.raw.technology) do
+    if technology.unit then
+        for _, pack in pairs(technology.unit.ingredients) do
+            valid_packs[pack[1]] = true
+        end
+    end
+end
+
 ---@param configuration Configuration
 ---@return auto_tech
 function auto_tech.create(configuration)
@@ -402,7 +413,7 @@ function auto_tech:set_tech_unit()
             science_pack_unlocked_by_this_tech = (data.raw[type] or {})[factorio_tech.name]
             if science_pack_unlocked_by_this_tech then break end
         end
-        if science_pack_unlocked_by_this_tech then
+        if science_pack_unlocked_by_this_tech and valid_packs[factorio_tech.name] then
             if nonprogression_packs[science_pack_unlocked_by_this_tech.name] then
                 if verbose_logging then
                     log("Depth of " .. science_pack_unlocked_by_this_tech.name .. " tech is " .. technology_node.depth .. ". it will be ignored as a non-progression pack.")
@@ -547,11 +558,6 @@ function auto_tech:set_science_packs()
     while not q:is_empty() do
         ---@type TechnologyNode
         local technology_node = q:pop_left()
-        local science_pack_unlocked_by_this_tech
-        for type in pairs(defines.prototypes.item) do
-            science_pack_unlocked_by_this_tech = (data.raw[type] or {})[technology_node.object_node.object.name]
-            if science_pack_unlocked_by_this_tech then break end
-        end
         for _, node in pairs(technology_node.nodes_that_require_this) do
             local new_node_to_check = not node.science_packs
             node.science_packs = node.science_packs or {}
@@ -560,8 +566,8 @@ function auto_tech:set_science_packs()
             for ingredient in pairs(technology_node.science_packs) do
                 node.science_packs[ingredient] = true
             end
-            if science_pack_unlocked_by_this_tech then
-                node.science_packs[science_pack_unlocked_by_this_tech.name] = true
+            if valid_packs[technology_node.object_node.object.name] then
+                node.science_packs[technology_node.object_node.object.name] = true
             end
             local has_grown = new_node_to_check or (table_size(technology_node.science_packs) > original_size)
             if has_grown then
