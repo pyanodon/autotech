@@ -114,11 +114,16 @@ function auto_tech:vanilla_massaging()
             end
             recipe.autotech_ignore = true
             -- Recycling recipes cause loops (and they never lead to new things anyway)
-        elseif recipe.category == "recycling" then
-            if self.configuration.verbose_logging then
-                log("Marking recycling recipe " .. name .. " as autotech_ignore")
+        elseif recipe.categories then
+            for _, category in pairs(recipe.categories) do
+                if category == "recycling" then
+                    if self.configuration.verbose_logging then
+                        log("Marking recycling recipe " .. name .. " as autotech_ignore")
+                    end
+                    recipe.autotech_ignore = true
+                    break
+                end
             end
-            recipe.autotech_ignore = true
         end
     end
 end
