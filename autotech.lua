@@ -19,6 +19,17 @@ local dependency_graph_lib = require "dependency-graph-lib/dependency_graph"
 local auto_tech = {}
 auto_tech.__index = auto_tech
 
+-- find all viable science packs, since anything can be a pack now simply checking the tech name isn't good enough
+---@type {[string]: boolean}
+local valid_packs = {}
+for _, technology in pairs(data.raw.technology) do
+    if technology.unit then
+        for _, pack in pairs(technology.unit.ingredients) do
+            valid_packs[pack[1]] = true
+        end
+    end
+end
+
 ---@param configuration Configuration
 ---@return auto_tech
 function auto_tech.create(configuration)
@@ -44,18 +55,19 @@ function auto_tech:run()
     self:run_phase(self.vanilla_massaging, "vanilla massaging")
     self.dependency_graph:run()
     self:run_phase(function()
-        self:run_phase(self.determine_mandatory_dependencies, "determine mandatory dependencies (1/12)")
-        self:run_phase(self.construct_tech_graph_nodes, "constructing tech graph nodes (2/12)")
-        self:run_phase(self.construct_tech_graph_edges, "constructing tech graph edges (3/12)")
-        self:run_phase(self.linearise_tech_graph, "tech graph linearisation (4/12)")
-        self:run_phase(self.verify_all_techs_are_reachable, "verifing all techs are reachable (5/12)")
-        self:run_phase(self.calculate_transitive_reduction, "transitive reduction calculation (6/12)")
-        self:run_phase(self.set_tech_prerequisites, "tech prerequisites setting (7/12)")
-        self:run_phase(self.set_tech_unit, "tech cost setting (8/12)")
-        self:run_phase(self.set_tech_order, "tech order setting (9/12)")
-        self:run_phase(self.set_science_packs, "science packs setting (10/12)")
-        self:run_phase(self.determine_essential_technologies, "determining essential techs (11/12)")
-        self:run_phase(self.serialize_cache_file, "cache file output (12/12)")
+        self:run_phase(self.determine_mandatory_dependencies, "determine mandatory dependencies (1/13)")
+        self:run_phase(self.construct_tech_graph_nodes, "constructing tech graph nodes (2/13)")
+        self:run_phase(self.construct_tech_graph_edges, "constructing tech graph edges (3/13)")
+        self:run_phase(self.linearise_tech_graph, "tech graph linearisation (4/13)")
+        self:run_phase(self.verify_all_techs_are_reachable, "verifing all techs are reachable (5/13)")
+        self:run_phase(self.calculate_transitive_reduction, "transitive reduction calculation (6/13)")
+        self:run_phase(self.set_tech_prerequisites, "tech prerequisites setting (7/13)")
+        self:run_phase(self.set_tech_unit, "tech cost setting (8/13)")
+        self:run_phase(self.set_tech_order, "tech order setting (9/13)")
+        self:run_phase(self.set_science_packs, "science packs setting (10/13)")
+        self:run_phase(self.determine_essential_technologies, "determining essential techs (11/13)")
+        self:run_phase(self.serialize_cache_file, "cache file output (12/13)")
+        self:run_phase(self.cleanup, "clean up data.raw (13/13)")
     end, "autotech")
     log("Autotech completed successfully.")
 end
@@ -102,11 +114,16 @@ function auto_tech:vanilla_massaging()
             end
             recipe.autotech_ignore = true
             -- Recycling recipes cause loops (and they never lead to new things anyway)
-        elseif recipe.category == "recycling" then
-            if self.configuration.verbose_logging then
-                log("Marking recycling recipe " .. name .. " as autotech_ignore")
+        elseif recipe.categories then
+            for _, category in pairs(recipe.categories) do
+                if category == "recycling" then
+                    if self.configuration.verbose_logging then
+                        log("Marking recycling recipe " .. name .. " as autotech_ignore")
+                    end
+                    recipe.autotech_ignore = true
+                    break
+                end
             end
-            recipe.autotech_ignore = true
         end
     end
 end
@@ -406,8 +423,12 @@ function auto_tech:set_tech_unit()
     -- get the depths of all science packs on the tech tree, excluding configured non-progression packs
     self.technology_nodes:for_all_nodes(function(technology_node)
         local factorio_tech = technology_node.object_node.object
-        local science_pack_unlocked_by_this_tech = data.raw.tool[factorio_tech.name]
-        if science_pack_unlocked_by_this_tech then
+        local science_pack_unlocked_by_this_tech
+        for type in pairs(defines.prototypes.item) do
+            science_pack_unlocked_by_this_tech = (data.raw[type] or {})[factorio_tech.name]
+            if science_pack_unlocked_by_this_tech then break end
+        end
+        if science_pack_unlocked_by_this_tech and valid_packs[factorio_tech.name] then
             if nonprogression_packs[science_pack_unlocked_by_this_tech.name] then
                 if verbose_logging then
                     log("Depth of " .. science_pack_unlocked_by_this_tech.name .. " tech is " .. technology_node.depth .. ". it will be ignored as a non-progression pack.")
@@ -559,7 +580,6 @@ function auto_tech:set_science_packs()
     while not q:is_empty() do
         ---@type TechnologyNode
         local technology_node = q:pop_left()
-        local science_pack_unlocked_by_this_tech = data.raw.tool[technology_node.object_node.object.name]
         for _, node in pairs(technology_node.nodes_that_require_this) do
             local new_node_to_check = not node.science_packs
             node.science_packs = node.science_packs or {}
@@ -568,8 +588,8 @@ function auto_tech:set_science_packs()
             for ingredient in pairs(technology_node.science_packs) do
                 node.science_packs[ingredient] = true
             end
-            if science_pack_unlocked_by_this_tech then
-                node.science_packs[science_pack_unlocked_by_this_tech.name] = true
+            if valid_packs[technology_node.object_node.object.name] then
+                node.science_packs[technology_node.object_node.object.name] = true
             end
             local has_grown = new_node_to_check or (table_size(technology_node.science_packs) > original_size)
             if has_grown then
@@ -653,6 +673,20 @@ function auto_tech:serialize_cache_file()
     result = add_newlines(lzw.lzw_compress(result), 100)
     -- add sentinels so that the cache file can be automatically extracted in PyPP-Regen-New.ps1
     log("<BEGINPYPP>\n" .. result .. "\n<ENDPYPP>")
+end
+
+function auto_tech:cleanup()
+    for _, type in pairs(data.raw) do
+        for _, prototype in pairs(type) do
+            prototype.autotech_ignore = nil
+            prototype.autotech_always_available = nil
+            if prototype.results then
+                for _, result in pairs(prototype.results) do
+                    result.autotech_is_not_primary_source = nil
+                end
+            end
+        end
+    end
 end
 
 return auto_tech

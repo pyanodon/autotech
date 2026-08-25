@@ -62,7 +62,9 @@ local technology_functor = object_node_functor:new(object_types.technology,
             object_node_functor:reverse_add_fulfiller_for_object_requirement_table(object, technology_requirements.science_pack, tech.unit.ingredients, object_types.item, object_nodes, 1)
         elseif tech.research_trigger then
             local trigger = tech.research_trigger
-            if trigger.type == "mine-entity" or trigger.type == "build-entity" then
+            if trigger.type == "mine-entity" then
+                object_node_functor:reverse_add_fulfiller_for_object_requirement(object, technology_requirements.trigger, trigger.entities, object_types.entity, object_nodes)
+            elseif trigger.type == "build-entity" then
                 object_node_functor:reverse_add_fulfiller_for_object_requirement(object, technology_requirements.trigger, trigger.entity, object_types.entity, object_nodes)
             elseif trigger.type == "craft-item" then
                 object_node_functor:reverse_add_fulfiller_for_object_requirement(object, technology_requirements.trigger, trigger.item, object_types.item, object_nodes)
