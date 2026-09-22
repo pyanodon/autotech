@@ -105,7 +105,7 @@ end
 
 ---@param requirer ObjectNode
 ---@param requirement string
----@param fulfiller_name string
+---@param fulfiller_name string|string[]
 ---@param fulfiller_type ObjectType
 ---@param object_nodes ObjectNodeStorage
 function object_node_functor:reverse_add_fulfiller_for_object_requirement(requirer, requirement, fulfiller_name, fulfiller_type, object_nodes)
